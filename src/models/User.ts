@@ -34,6 +34,10 @@ const userSchema = new Schema(
       enum: ["user", "admin", "employer"],
       default: "user",
     },
+    onboardingCompleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

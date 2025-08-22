@@ -17,44 +17,6 @@ import { toast } from "sonner";
 import { PasswordInput } from "../ui/password-input";
 import { IconBrandApple, IconBrandGoogle } from "@tabler/icons-react";
 
-const validateEmail = (email: string) => {
-  if (!email || email.trim() === "") return "Email is required";
-  if (email.length > 254) return "Email must not exceed 254 characters";
-  
-  // Check if email starts with @ or ends with @ or has no @ symbol
-  if (email.startsWith('@') || email.endsWith('@') || !email.includes('@')) {
-    return "Please enter a valid email address";
-  }
-  
-  // Check if email has exactly one @ symbol
-  const atCount = (email.match(/@/g) || []).length;
-  if (atCount !== 1) return "Please enter a valid email address";
-  
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-  if (!emailRegex.test(email)) return "Please enter a valid email address";
-  
-  const [localPart, domain] = email.split('@');
-  
-  // Check if local part is empty
-  if (!localPart || localPart.trim() === "") return "Please enter a valid email address";
-  
-  // Check if domain is empty or invalid
-  if (!domain || domain.trim() === "" || domain === ".com" || !domain.includes('.')) {
-    return "Please enter a valid email address";
-  }
-  
-  if (localPart.length > 64) return "Email local part must not exceed 64 characters";
-  if (localPart.startsWith('.') || localPart.endsWith('.')) return "Email cannot start or end with a dot";
-  if (localPart.startsWith('-') || localPart.endsWith('-')) return "Email cannot start or end with a hyphen";
-  if (localPart.includes('..')) return "Email cannot contain consecutive dots";
-  
-  if (domain.startsWith('-') || domain.endsWith('-')) return "Domain cannot start or end with a hyphen";
-  if (domain.includes('..')) return "Domain cannot contain consecutive dots";
-  if (domain.startsWith('.') || domain.endsWith('.')) return "Please enter a valid email address";
-  
-  return null;
-};
-
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
 
@@ -66,13 +28,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
   async function handleSubmit(e: any) {
     e.preventDefault();
-
-    // Validate email
-    const emailValidationError = validateEmail(email);
-    if (emailValidationError) {
-      setError(emailValidationError);
-      return;
-    }
 
     const { data, error } = await authClient.signIn.email(
       {
@@ -98,10 +53,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
         onRequest: (ctx) => {
           setLoading(true);
         },
-        onSuccess: (ctx) => {
-          toast.success("Login success");
-          router.replace("/dashboard");
-        },
+        onSuccess: (ctx) => {},
         onError: (ctx) => {
           setError(ctx.error.message);
           setLoading(false);
@@ -180,13 +132,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     },
                     onSuccess: (ctx: any) => {
                       toast.success("Authentication Redirecting...");
-                      // router.replace("/dashboard");
                     },
                     onError: (ctx: any) => {
                       setError(ctx.error.message);
                     },
                   },
-                  callbackURL: "/dashboard",
                 });
               }}
               className="group w-full cursor-pointer  space-x-1 py-3 flex transform-gpu dark:[border:1px_solid_rgba(255,255,255,.1)] dark:[box-shadow:0_-20px_80px_-20px_#8688921_inset]  border-white/10  items-center justify-center border rounded-lg hover:bg-transparent/20 duration-150 active:bg-transparent/50"

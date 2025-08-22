@@ -61,15 +61,6 @@ export const auth = betterAuth({
         defaultValue: "user",
         enum: ["user", "admin", "employer"],
       },
-      isServiceProvider: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-      },
-      serviceProviderId: {
-        type: "number",
-        required: false,
-      },
     },
     update: {
       before: async (session: Record<string, unknown>) => {
@@ -81,7 +72,7 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    enabled: true,
+    enabled: false,
     sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
       await sendEmail({
         to: user.email,

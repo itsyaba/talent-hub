@@ -15,7 +15,7 @@ import { Settings } from "lucide-react";
 import { UserIcon } from "lucide-react";
 import { authClient } from "@/lib/auth/auth-client";
 import { useSession } from "@/hooks/use-session";
-import { IconDashboard } from "@tabler/icons-react";
+import { IconDashboard, IconUserFilled } from "@tabler/icons-react";
 
 export function SignOut() {
   const router = useRouter();
@@ -48,7 +48,7 @@ export function SignOut() {
                   alt="@shadcn"
                 />
                 <AvatarFallback className="">
-                  <UserIcon className="size-6 fill-white" />
+                  <IconUserFilled className="size-6 fill-white" />
                 </AvatarFallback>
               </>
             )}
@@ -86,6 +86,15 @@ export function SignOut() {
           <span>Profile</span>
         </DropdownMenuItem>
 
+        <DropdownMenuItem
+          onClick={() => {
+            router.push("/profile/settings");
+          }}
+          className="h-10 cursor-pointer rounded-xl hover:bg-black/70"
+        >
+          <Settings className="mr-2 h-4 w-4" />
+          <span>Settings</span>
+        </DropdownMenuItem>
         <DropdownMenuItem
           className="h-10 cursor-pointer rounded-xl hover:bg-black/70"
           onClick={handleSignOut}
