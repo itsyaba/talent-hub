@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { useSession } from "@/hooks/use-session";
+import { SignOut } from "./auth/sign-out";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
+  const { data: session, isPending } = useSession();
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -121,13 +124,19 @@ const Navbar = () => {
 
           {/* Sign In Button */}
           <motion.div className="hidden md:block" variants={itemVariants}>
-            <motion.button
-              className="bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:bg-primary/90 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Sign in
-            </motion.button>
+            {session && !isPending ? (
+              <SignOut />
+            ) : (
+              <Link href="/login">
+                <motion.button
+                  className="bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:bg-primary/90 transition-all duration-200 font-medium shadow-lg hover:shadow-xl"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Sign in
+                </motion.button>
+              </Link>
+            )}
           </motion.div>
 
           {/* Mobile Menu Button */}
