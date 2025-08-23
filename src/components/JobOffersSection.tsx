@@ -12,9 +12,11 @@ import {
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
 import { useJobs } from "@/hooks/use-jobs";
+import { useRouter } from "next/navigation";
 
 const JobOffersSection = () => {
   const { jobs, loading, error } = useJobs(12);
+  const router = useRouter();
 
   // Function to get category icon based on job tags or company industry
   const getCategoryIcon = (job: any) => {
@@ -143,6 +145,11 @@ const JobOffersSection = () => {
     return colors[index];
   };
 
+  // Function to handle job card click
+  const handleJobClick = (jobId: string) => {
+    router.push(`/jobs/${jobId}`);
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -260,7 +267,7 @@ const JobOffersSection = () => {
             {jobs.map((job, index) => (
               <motion.div
                 key={job._id}
-                className="bg-card p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all duration-200 cursor-pointer group hover:shadow-lg"
+                className="bg-card p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all duration-200 cursor-pointer group hover:shadow-lg relative overflow-hidden"
                 variants={itemVariants}
                 whileHover={{
                   scale: 1.03,
@@ -268,7 +275,10 @@ const JobOffersSection = () => {
                   boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
                 }}
                 whileTap={{ scale: 0.98 }}
+                onClick={() => handleJobClick(job._id)}
               >
+                {/* Click indicator */}
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
                 {/* Top Section - Category */}
                 <motion.div className="flex items-center space-x-2 mb-4" whileHover={{ x: 5 }}>
                   {getCategoryIcon(job)}
@@ -318,6 +328,11 @@ const JobOffersSection = () => {
                   >
                     {getCompanyLogo(job.company.name)}
                   </motion.div> */}
+                </div>
+
+                {/* Click hint */}
+                <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <span className="text-xs text-primary font-medium">Click to view details</span>
                 </div>
               </motion.div>
             ))}

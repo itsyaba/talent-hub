@@ -17,19 +17,53 @@ const applicationSchema = new Schema(
       enum: ["applied", "shortlisted", "interviewed", "rejected", "hired"],
       default: "applied",
     },
+    fullName: {
+      type: String,
+      required: [true, "Full name is required"],
+      trim: true,
+    },
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      trim: true,
+    },
+    phone: {
+      type: String,
+      required: [true, "Phone number is required"],
+      trim: true,
+    },
+    location: {
+      type: String,
+      required: [true, "Location is required"],
+      trim: true,
+    },
     coverLetter: {
       type: String,
-      required: false,
+      required: [true, "Cover letter is required"],
       trim: true,
     },
     resume: {
-      type: String,
-      required: false,
-      trim: true,
+      filename: {
+        type: String,
+        required: [true, "Resume filename is required"],
+      },
+      size: {
+        type: Number,
+        required: [true, "Resume file size is required"],
+      },
+      type: {
+        type: String,
+        required: [true, "Resume file type is required"],
+      },
+      // In production, you'd also store the file URL
+      url: {
+        type: String,
+        required: false,
+      },
     },
     experience: {
       type: String,
-      required: false,
+      required: [true, "Experience is required"],
       trim: true,
     },
     skills: {

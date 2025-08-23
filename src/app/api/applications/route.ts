@@ -121,12 +121,43 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    const body = await request.json();
-    const { jobId, coverLetter, resume, experience, skills, expectedSalary, availability } = body;
+    // Handle FormData for file uploads
+    const formData = await request.formData();
+    const jobId = formData.get("jobId") as string;
+    const fullName = formData.get("fullName") as string;
+    const email = formData.get("email") as string;
+    const phone = formData.get("phone") as string;
+    const location = formData.get("location") as string;
+    const experience = formData.get("experience") as string;
+    const skills = JSON.parse((formData.get("skills") as string) || "[]");
+    const expectedSalary = formData.get("expectedSalary") as string;
+    const availability = formData.get("availability") as string;
+    const coverLetter = formData.get("coverLetter") as string;
+    const resumeFile = formData.get("resume") as File;
 
     // Validate required fields
     if (!jobId) {
       return NextResponse.json({ success: false, error: "Job ID is required" }, { status: 400 });
+    }
+
+    if (!fullName || !email || !phone || !location || !experience || !coverLetter) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "All required fields must be filled",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (!resumeFile) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Resume file is required",
+        },
+        { status: 400 }
+      );
     }
 
     // Check if job exists and is active
@@ -152,19 +183,49 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create new application
-    const application = new Application({
+    // Handle file upload (for now, we'll store file info, but in production you'd want to upload to cloud storage)
+    const resumeInfo = {
+      filename: resumeFile.name,
+      size: resumeFile.size,
+      type: resumeFile.type,
+      // In production, you'd upload the file to cloud storage and store the URL
+      // For now, we'll store basic file info
+    };
+
+    console.log("Resume info:", resumeInfo);
+    console.log("Skills:", skills);
+    console.log("Expected salary:", expectedSalary);
+
+    // Create new application with enhanced data
+    const applicationData = {
       jobId,
       userId: session.user.id,
-      coverLetter: coverLetter || "",
-      resume: resume || "",
-      experience: experience || "",
+      fullName,
+      email,
+      phone,
+      location,
+      experience,
       skills: skills || [],
-      expectedSalary: expectedSalary || null,
+      expectedSalary:
+        expectedSalary && expectedSalary.trim() !== "" ? parseFloat(expectedSalary) : undefined,
       availability: availability || "immediate",
-    });
+      coverLetter,
+      resume: resumeInfo, // Store file info instead of just string
+    };
 
-    await application.save();
+    console.log("Application data being sent to model:", applicationData);
+
+    const application = new Application(applicationData);
+
+    try {
+      await application.save();
+    } catch (saveError) {
+      console.error("Save error details:", saveError);
+      if (saveError instanceof Error) {
+        console.error("Validation errors:", (saveError as any).errors);
+      }
+      throw saveError;
+    }
 
     // Add application to job's applications array
     await Job.findByIdAndUpdate(jobId, {
