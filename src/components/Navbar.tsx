@@ -62,11 +62,13 @@ const Navbar = () => {
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
           {/* Logo */}
-          <motion.div className="flex items-center" variants={itemVariants}>
-            <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
-              Talent Hub
-            </h1>
-          </motion.div>
+          <Link href="/">
+            <motion.div className="flex items-center" variants={itemVariants}>
+              <h1 className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent">
+                Talent Hub
+              </h1>
+            </motion.div>
+          </Link>
 
           {/* Desktop Navigation */}
           <motion.div

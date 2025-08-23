@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
-import Application from "@/models/Application";
-import Job from "@/models/Job";
-import User from "@/models/User";
+import { Application, Job, User } from "@/models";
 
 // GET /api/applications - Get applications with optional filtering
 export async function GET(request: NextRequest) {

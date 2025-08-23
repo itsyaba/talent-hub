@@ -38,10 +38,6 @@ export const auth = betterAuth({
       clientId: process.env.GOOGLE_CLIENT_ID as string,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
     },
-    apple: {
-      clientId: process.env.APPLE_CLIENT_ID as string,
-      clientSecret: process.env.APPLE_CLIENT_SECRET as string,
-    },
   },
 
   databaseHooks: {
@@ -60,6 +56,17 @@ export const auth = betterAuth({
         required: false,
         defaultValue: "user",
         enum: ["user", "admin", "employer"],
+      },
+      companyProfile: {
+        type: "object",
+        required: false,
+        defaultValue: {},
+        properties: {
+          industry: { type: "string", required: false },
+          size: { type: "string", required: false },
+          website: { type: "string", required: false },
+          location: { type: "string", required: false },
+        },
       },
     },
     update: {

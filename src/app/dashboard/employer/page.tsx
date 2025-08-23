@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/hooks/use-session";
 import { useEmployerDashboard } from "@/hooks/use-employer-dashboard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import CompanyProfileModal from "@/components/CompanyProfileModal";
 import {
   Briefcase,
   Users,
@@ -31,6 +32,7 @@ export default function EmployerDashboard() {
     refreshData,
   } = useEmployerDashboard();
   const router = useRouter();
+  const [showCompanyProfileModal, setShowCompanyProfileModal] = useState(false);
 
   useEffect(() => {
     if (loading) return;
@@ -99,6 +101,14 @@ export default function EmployerDashboard() {
             </p>
           </div>
           <div className="flex gap-2">
+            <Button
+              onClick={() => router.push("/dashboard/employer/post-job")}
+              size="sm"
+              className="flex items-center gap-2 bg-green-600 hover:bg-green-700"
+            >
+              <Plus className="w-4 h-4" />
+              Post New Job
+            </Button>
             <Button
               onClick={refreshData}
               variant="outline"
@@ -202,8 +212,8 @@ export default function EmployerDashboard() {
           </Card>
         </div>
 
-        {/* Recent Applications and Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Recent Applications */}
+        <div className="mb-8">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -281,41 +291,15 @@ export default function EmployerDashboard() {
               )}
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Manage your hiring process efficiently</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button className="w-full justify-start">
-                <Plus className="mr-2 h-4 w-4" />
-                Post New Job
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Briefcase className="mr-2 h-4 w-4" />
-                Manage Jobs
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Users className="mr-2 h-4 w-4" />
-                View All Applications
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
-                Schedule Interviews
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <TrendingUp className="mr-2 h-4 w-4" />
-                Analytics Dashboard
-              </Button>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Company Profile Section */}
         <Card className="mt-8">
           <CardHeader>
-            <CardTitle>Company Profile</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Building className="h-5 w-5 text-blue-600" />
+              Company Profile
+            </CardTitle>
             <CardDescription>
               Keep your company information up to date to attract better candidates
             </CardDescription>
@@ -334,7 +318,7 @@ export default function EmployerDashboard() {
                     Industry
                   </label>
                   <p className="text-slate-900 dark:text-white">
-                    {dashboardData?.jobs.recent?.[0]?.company?.industry || "Not specified"}
+                    {session.user.companyProfile?.industry || "Not specified"}
                   </p>
                 </div>
                 <div>
@@ -342,7 +326,7 @@ export default function EmployerDashboard() {
                     Company Size
                   </label>
                   <p className="text-slate-900 dark:text-white">
-                    {dashboardData?.jobs.recent?.[0]?.company?.size || "Not specified"}
+                    {session.user.companyProfile?.size || "Not specified"}
                   </p>
                 </div>
               </div>
@@ -352,7 +336,7 @@ export default function EmployerDashboard() {
                     Location
                   </label>
                   <p className="text-slate-900 dark:text-white">
-                    {dashboardData?.jobs.recent?.[0]?.company?.location || "Not specified"}
+                    {session.user.companyProfile?.location || "Not specified"}
                   </p>
                 </div>
                 <div>
@@ -360,24 +344,66 @@ export default function EmployerDashboard() {
                     Website
                   </label>
                   <p className="text-slate-900 dark:text-white">
-                    {dashboardData?.jobs.recent?.[0]?.company?.website || "Not specified"}
+                    {session.user.companyProfile?.website || "Not specified"}
                   </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Active Jobs
                   </label>
-                  <p className="text-slate-900 dark:text-white">
+                  <p className="text-slate-900 dark:text-slate-400">
                     {dashboardData?.stats.activeJobs || 0} jobs posted
                   </p>
                 </div>
               </div>
             </div>
             <div className="mt-6">
-              <Button variant="outline">Edit Company Profile</Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowCompanyProfileModal(true)}
+                className="flex items-center gap-2"
+              >
+                <Building className="w-4 h-4" />
+                Edit Company Profile
+              </Button>
             </div>
           </CardContent>
         </Card>
+
+        {/* Company Profile Edit Modal */}
+        <CompanyProfileModal
+          isOpen={showCompanyProfileModal}
+          onClose={() => setShowCompanyProfileModal(false)}
+          currentProfile={{
+            name: session.user.name || "",
+            industry: session.user.companyProfile?.industry || "",
+            size: session.user.companyProfile?.size || "",
+            website: session.user.companyProfile?.website || "",
+            location: session.user.companyProfile?.location || "",
+          }}
+          onSave={async (profile) => {
+            try {
+              const response = await fetch("/api/employer/company-profile", {
+                method: "PATCH",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify(profile),
+              });
+
+              if (response.ok) {
+                // Refresh dashboard data to show updated company profile
+                refreshData();
+              } else {
+                const error = await response.json();
+                throw new Error(error.error || "Failed to update company profile");
+              }
+            } catch (error) {
+              console.error("Error updating company profile:", error);
+              throw error;
+            }
+          }}
+        />
       </div>
     </div>
   );

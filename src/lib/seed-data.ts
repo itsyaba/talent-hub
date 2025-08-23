@@ -1,7 +1,5 @@
 import dbConnect from "./db";
-import Job from "@/models/Job";
-import Application from "@/models/Application";
-import User from "@/models/User";
+import { Job, Application, User } from "@/models";
 
 // Sample data for testing
 const sampleJobs = [

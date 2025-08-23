@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
-import Job from "@/models/Job";
-import User from "@/models/User";
+import { Job, User } from "@/models";
+
+// Ensure models are registered
+import "@/models";
 
 // GET /api/jobs - Get all jobs with optional filtering
 export async function GET(request: NextRequest) {
@@ -28,12 +30,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Get jobs with pagination
-    const jobs = await Job.find(filter)
-      .populate("createdBy", "name email")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
+    const jobs = await Job.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean();
 
     // Get total count for pagination
     const total = await Job.countDocuments(filter);
@@ -116,9 +113,8 @@ export async function POST(request: NextRequest) {
 
     await job.save();
 
-    // Populate creator info
-    await job.populate("createdBy", "name email");
-
+    // Return the job without populating to avoid the error
+    // The frontend can fetch user details separately if needed
     return NextResponse.json({ success: true, data: job }, { status: 201 });
   } catch (error) {
     console.error("Error creating job:", error);

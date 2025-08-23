@@ -65,14 +65,37 @@ src/
     └── utils.ts         # Utility functions
 ```
 
+## API Endpoints
+
+### Authentication
+
+- `POST /api/auth/signin` - User sign in
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/signout` - User sign out
+
+### Jobs
+
+- `GET /api/jobs` - List all jobs with filtering and pagination
+- `POST /api/jobs` - Create a new job (employer only)
+
+### Applications
+
+- `GET /api/applications` - List applications with filtering
+- `POST /api/applications` - Apply for a job
+- `GET /api/applications/[id]` - Get application details
+- `PATCH /api/applications/[id]` - Update application status (employer only)
+
+### Employer Dashboard
+
+- `GET /api/employer/dashboard` - Get employer dashboard data
+- `GET /api/employer/company-profile` - Get company profile
+- `PATCH /api/employer/company-profile` - Update company profile
+
+### Data Management
+
+- `POST /api/seed` - Seed database with sample data
+
 ## Components
-
-### Navbar
-
-- Responsive navigation with mobile menu
-- Jobster logo with gradient text
-- Navigation links and sign-in button
-- Mobile hamburger menu
 
 ### HeroSection
 

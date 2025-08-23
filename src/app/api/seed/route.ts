@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { seedData, clearSeededData } from "@/lib/seed-data";
-import getUserSession from "@/hooks/use-get-user-session";
+import { auth } from "@/lib/auth/auth";
+
+// Ensure models are registered
+import "@/models";
 
 // POST /api/seed - Seed the database with sample data
 export async function POST(request: NextRequest) {
   try {
-    const session = await getUserSession();
+    const session = await auth.api.getSession({ headers: request.headers });
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
     }

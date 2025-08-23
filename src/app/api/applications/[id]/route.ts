@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
-import Application from "@/models/Application";
-import Job from "@/models/Job";
+import { Application, Job } from "@/models";
 
 // PATCH /api/applications/[id] - Update application status
 export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {

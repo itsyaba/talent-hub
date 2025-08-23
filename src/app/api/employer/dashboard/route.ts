@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
-import Job from "@/models/Job";
-import Application from "@/models/Application";
+import { Job, Application } from "@/models";
 
 // GET /api/employer/dashboard - Get employer dashboard data
 export async function GET(request: NextRequest) {

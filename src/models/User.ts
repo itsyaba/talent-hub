@@ -38,6 +38,24 @@ const userSchema = new Schema(
       type: Boolean,
       default: false,
     },
+    companyProfile: {
+      industry: {
+        type: String,
+        trim: true,
+      },
+      size: {
+        type: String,
+        trim: true,
+      },
+      website: {
+        type: String,
+        trim: true,
+      },
+      location: {
+        type: String,
+        trim: true,
+      },
+    },
   },
   {
     timestamps: true,

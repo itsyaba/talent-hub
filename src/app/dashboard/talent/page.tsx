@@ -169,26 +169,22 @@ export default function TalentDashboard() {
 
           <Card>
             <CardHeader>
-              <CardTitle>Quick Actions</CardTitle>
-              <CardDescription>Common tasks and shortcuts</CardDescription>
+              <CardTitle className="flex items-center gap-2">
+                <Briefcase className="h-5 w-5 text-green-600" />
+                Jobs Applied For
+              </CardTitle>
+              <CardDescription>Track your job applications and their status</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button className="w-full justify-start" variant="outline">
-                <User className="mr-2 h-4 w-4" />
-                Update Profile
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Briefcase className="mr-2 h-4 w-4" />
-                Browse Jobs
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Calendar className="mr-2 h-4 w-4" />
-                Schedule Interview
-              </Button>
-              <Button className="w-full justify-start" variant="outline">
-                <Star className="mr-2 h-4 w-4" />
-                View Applications
-              </Button>
+              {/* This will be populated with real data from API */}
+              <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                <Briefcase className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                <p>No applications yet</p>
+                <p className="text-sm">Start applying to jobs to see them here</p>
+                <Button className="mt-4" onClick={() => router.push("/jobs")}>
+                  Browse Jobs
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
