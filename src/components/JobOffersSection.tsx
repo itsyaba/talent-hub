@@ -7,56 +7,141 @@ import {
   IconCircle,
   IconMapPin,
   IconCalendar,
+  IconBriefcase,
+  IconBuilding,
 } from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import { useJobs } from "@/hooks/use-jobs";
 
 const JobOffersSection = () => {
-  const jobOffers = [
-    {
-      category: "Finance",
-      categoryIcon: <IconTrendingUp className="w-4 h-4 text-primary" />,
-      title: "Financial Analyst",
-      location: "San Diego, CA",
-      type: "Full Time",
-      date: "June 8, 2022",
-      company: "Gramware",
-      logo: "L9",
-      logoBg: "bg-foreground",
-    },
-    {
-      category: "Software Engineering",
-      categoryIcon: <IconCode className="w-4 h-4 text-primary" />,
-      title: "Fullstack Web Developer",
-      location: "San Francisco, CA",
-      type: "Internship",
-      date: "June 8, 2022",
-      company: "Syspresoft",
-      logo: "~",
-      logoBg: "bg-primary",
-    },
-    {
-      category: "Human Resources",
-      categoryIcon: <IconUsers className="w-4 h-4 text-primary" />,
-      title: "Human Resources Coordinator",
-      location: "San Diego, CA",
-      type: "Full Time",
-      date: "June 8, 2022",
-      company: "DataRes",
-      logo: "▶",
-      logoBg: "bg-primary",
-    },
-    {
-      category: "Business Development",
-      categoryIcon: <IconCircle className="w-4 h-4 text-primary" />,
-      title: "Technical Writer",
-      location: "Los Angeles, CA",
-      type: "Remote",
-      date: "June 7, 2022",
-      company: "Craftgenics",
-      logo: "S",
-      logoBg: "bg-orange-500",
-    },
-  ];
+  const { jobs, loading, error } = useJobs(12);
+
+  // Function to get category icon based on job tags or company industry
+  const getCategoryIcon = (job: any) => {
+    const tags = job.tags || [];
+    const industry = job.company?.industry || "";
+
+    if (
+      tags.some(
+        (tag: string) =>
+          tag.toLowerCase().includes("finance") || tag.toLowerCase().includes("accounting")
+      )
+    ) {
+      return <IconTrendingUp className="w-4 h-4 text-primary" />;
+    }
+    if (
+      tags.some(
+        (tag: string) =>
+          tag.toLowerCase().includes("software") ||
+          tag.toLowerCase().includes("development") ||
+          tag.toLowerCase().includes("programming")
+      )
+    ) {
+      return <IconCode className="w-4 h-4 text-primary" />;
+    }
+    if (
+      tags.some(
+        (tag: string) =>
+          tag.toLowerCase().includes("hr") ||
+          tag.toLowerCase().includes("human") ||
+          tag.toLowerCase().includes("recruitment")
+      )
+    ) {
+      return <IconUsers className="w-4 h-4 text-primary" />;
+    }
+    if (
+      industry.toLowerCase().includes("technology") ||
+      industry.toLowerCase().includes("software")
+    ) {
+      return <IconCode className="w-4 h-4 text-primary" />;
+    }
+    if (industry.toLowerCase().includes("finance") || industry.toLowerCase().includes("banking")) {
+      return <IconTrendingUp className="w-4 h-4 text-primary" />;
+    }
+
+    return <IconBriefcase className="w-4 h-4 text-primary" />;
+  };
+
+  // Function to get category name
+  const getCategoryName = (job: any) => {
+    const tags = job.tags || [];
+    const industry = job.company?.industry || "";
+
+    if (
+      tags.some(
+        (tag: string) =>
+          tag.toLowerCase().includes("finance") || tag.toLowerCase().includes("accounting")
+      )
+    ) {
+      return "Finance";
+    }
+    if (
+      tags.some(
+        (tag: string) =>
+          tag.toLowerCase().includes("software") ||
+          tag.toLowerCase().includes("development") ||
+          tag.toLowerCase().includes("programming")
+      )
+    ) {
+      return "Software Engineering";
+    }
+    if (
+      tags.some(
+        (tag: string) =>
+          tag.toLowerCase().includes("hr") ||
+          tag.toLowerCase().includes("human") ||
+          tag.toLowerCase().includes("recruitment")
+      )
+    ) {
+      return "Human Resources";
+    }
+    if (
+      industry.toLowerCase().includes("technology") ||
+      industry.toLowerCase().includes("software")
+    ) {
+      return "Technology";
+    }
+    if (industry.toLowerCase().includes("finance") || industry.toLowerCase().includes("banking")) {
+      return "Finance";
+    }
+
+    return industry || "General";
+  };
+
+  // Function to format date
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Function to get company logo initials
+  const getCompanyLogo = (companyName: string) => {
+    if (!companyName) return "?";
+    const words = companyName.split(" ");
+    if (words.length >= 2) {
+      return words[0][0] + words[1][0];
+    }
+    return companyName[0] || "?";
+  };
+
+  // Function to get random background color for company logo
+  const getLogoBg = (companyName: string) => {
+    const colors = [
+      "bg-primary",
+      "bg-orange-500",
+      "bg-green-500",
+      "bg-blue-500",
+      "bg-purple-500",
+      "bg-pink-500",
+      "bg-indigo-500",
+    ];
+    const index = companyName.length % colors.length;
+    return colors[index];
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -94,6 +179,51 @@ const JobOffersSection = () => {
     },
   };
 
+  if (loading) {
+    return (
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-3">
+              Featured Job Offers
+            </h2>
+            <p className="text-lg text-muted-foreground">Loading available opportunities...</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(12)].map((_, index) => (
+              <div
+                key={index}
+                className="bg-card p-6 rounded-2xl border border-border/50 animate-pulse"
+              >
+                <div className="h-4 bg-muted rounded mb-4"></div>
+                <div className="h-6 bg-muted rounded mb-3"></div>
+                <div className="h-4 bg-muted rounded mb-4"></div>
+                <div className="h-4 bg-muted rounded"></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4 lg:px-8">
+          <div className="mb-12">
+            <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-3">
+              Featured Job Offers
+            </h2>
+            <p className="text-lg text-muted-foreground">
+              Unable to load jobs at the moment. Please try again later.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <motion.section
       className="py-16 bg-muted/30"
@@ -120,73 +250,108 @@ const JobOffersSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            Search your career opportunity through 12,800 jobs
+            Search your career opportunity through {jobs.length} active jobs
           </motion.p>
         </motion.div>
 
         {/* Job Offer Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {jobOffers.map((job, index) => (
-            <motion.div
-              key={index}
-              className="bg-card p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all duration-200 cursor-pointer group hover:shadow-lg"
-              variants={itemVariants}
-              whileHover={{
-                scale: 1.03,
-                y: -8,
-                boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
-              }}
-              whileTap={{ scale: 0.98 }}
-            >
-              {/* Top Section - Category */}
-              <motion.div className="flex items-center space-x-2 mb-4" whileHover={{ x: 5 }}>
-                {job.categoryIcon}
-                <span className="text-sm text-muted-foreground font-medium">{job.category}</span>
-              </motion.div>
-
-              {/* Job Title */}
-              <motion.h3
-                className="text-lg font-semibold text-foreground mb-3 line-clamp-2"
-                whileHover={{ color: "hsl(var(--primary))" }}
+        {jobs.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {jobs.map((job, index) => (
+              <motion.div
+                key={job._id}
+                className="bg-card p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all duration-200 cursor-pointer group hover:shadow-lg"
+                variants={itemVariants}
+                whileHover={{
+                  scale: 1.03,
+                  y: -8,
+                  boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+                }}
+                whileTap={{ scale: 0.98 }}
               >
-                {job.title}
-              </motion.h3>
+                {/* Top Section - Category */}
+                <motion.div className="flex items-center space-x-2 mb-4" whileHover={{ x: 5 }}>
+                  {getCategoryIcon(job)}
+                  <span className="text-sm text-muted-foreground font-medium">
+                    {getCategoryName(job)}
+                  </span>
+                </motion.div>
 
-              {/* Location & Type */}
-              <div className="flex items-center space-x-4 mb-4 text-sm text-muted-foreground">
-                <motion.div className="flex items-center space-x-1" whileHover={{ scale: 1.05 }}>
-                  <IconMapPin className="w-4 h-4" />
-                  <span>{job.location}</span>
-                </motion.div>
-                <motion.span
-                  className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium"
-                  whileHover={{ scale: 1.1 }}
+                {/* Job Title */}
+                <motion.h3
+                  className="text-lg font-semibold text-foreground mb-3 line-clamp-2"
+                  whileHover={{ color: "hsl(var(--primary))" }}
                 >
-                  {job.type}
-                </motion.span>
-              </div>
+                  {job.title}
+                </motion.h3>
 
-              {/* Bottom Section - Date, Company & Logo */}
-              <div className="flex items-center justify-between pt-4 border-t border-border/30">
-                <motion.div
-                  className="flex items-center space-x-1 text-sm text-muted-foreground"
-                  whileHover={{ x: -3 }}
-                >
-                  <IconCalendar className="w-4 h-4" />
-                  <span>{job.date} by</span>
-                  <span className="font-medium text-foreground">{job.company}</span>
-                </motion.div>
-                <motion.div
-                  className={`w-10 h-10 ${job.logoBg} rounded-lg flex items-center justify-center text-card font-bold text-sm`}
-                  whileHover={{ scale: 1.1, rotate: 5 }}
-                  whileTap={{ scale: 0.9 }}
-                >
-                  {job.logo}
-                </motion.div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                {/* Location & Type */}
+                <div className="flex items-center space-x-4 mb-4 text-sm text-muted-foreground">
+                  <motion.div className="flex items-center space-x-1" whileHover={{ scale: 1.05 }}>
+                    <IconMapPin className="w-4 h-4" />
+                    <span>{job.location}</span>
+                  </motion.div>
+                  <motion.span
+                    className="px-2 py-1 bg-primary/10 text-primary rounded-full text-xs font-medium capitalize"
+                    whileHover={{ scale: 1.1 }}
+                  >
+                    {job.type.replace("-", " ")}
+                  </motion.span>
+                </div>
+
+                {/* Bottom Section - Date, Company & Logo */}
+                <div className="flex items-center justify-between pt-4 border-t border-border/30">
+                  <motion.div
+                    className="flex items-center space-x-1 text-sm text-muted-foreground"
+                    whileHover={{ x: -3 }}
+                  >
+                    <IconCalendar className="w-4 h-4" />
+                    <span>{formatDate(job.createdAt)} by</span>
+                    <span className="font-medium text-foreground">{job.company.name}</span>
+                  </motion.div>
+                  {/* <motion.div
+                    className={`w-10 h-10 ${getLogoBg(
+                      job.company.name
+                    )} rounded-lg flex items-center justify-center text-card font-bold text-sm`}
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    whileTap={{ scale: 0.9 }}
+                  >
+                    {getCompanyLogo(job.company.name)}
+                  </motion.div> */}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        ) : (
+          <motion.div
+            className="text-center py-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6 }}
+          >
+            <IconBuilding className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">No Jobs Available</h3>
+            <p className="text-muted-foreground">Check back later for new opportunities!</p>
+          </motion.div>
+        )}
+
+        {/* View All Jobs Button */}
+        {/* {jobs.length > 0 && (
+          <motion.div
+            className="text-center mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            <motion.button
+              className="px-8 py-3 bg-primary text-primary-foreground rounded-full font-semibold hover:bg-primary/90 transition-colors duration-200"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              View All Jobs
+            </motion.button>
+          </motion.div>
+        )} */}
       </div>
     </motion.section>
   );

@@ -4,8 +4,36 @@ import { auth } from "@/lib/auth/auth";
 
 // Ensure models are registered
 import "@/models";
+import dbConnect from "@/lib/db";
 
-// POST /api/seed - Seed the database with sample data
+// GET /api/seed - Seed the database with sample data (development only)
+export async function GET() {
+  try {
+    // Only allow in development environment
+    // if (process.env.NODE_ENV === "production") {
+    //   return NextResponse.json(
+    //     { success: false, error: "Not available in production" },
+    //     { status: 403 }
+    //   );
+    // }
+
+    await dbConnect();
+
+    // Seed the data with a default employer ID (for development)
+    const result = await seedData("development");
+
+    return NextResponse.json({
+      success: true,
+      message: result.message,
+      data: result.jobs,
+    });
+  } catch (error) {
+    console.error("Error seeding data:", error);
+    return NextResponse.json({ success: false, error: "Failed to seed data" }, { status: 500 });
+  }
+}
+
+// POST /api/seed - Seed the database with sample data (authenticated)
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
@@ -14,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user is an employer
-    if (session.user.role !== "employer") {
+    if ((session.user as any).role !== "employer") {
       return NextResponse.json(
         { success: false, error: "Only employers can seed data" },
         { status: 403 }

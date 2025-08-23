@@ -116,6 +116,72 @@ const sampleJobs = [
     experienceLevel: "senior",
     status: "active",
   },
+  {
+    title: "Financial Analyst",
+    description: "Analyze financial data and provide insights to support business decisions.",
+    requirements: ["Excel", "Financial modeling", "Data analysis", "2+ years experience"],
+    location: "Chicago, IL",
+    type: "full-time",
+    salary: {
+      min: 70000,
+      max: 100000,
+      currency: "USD",
+    },
+    company: {
+      name: "FinanceHub Ltd.",
+      industry: "Finance",
+      size: "50-200 employees",
+      website: "www.financehub.com",
+      location: "Chicago, IL",
+    },
+    tags: ["finance", "analysis", "excel", "modeling"],
+    experienceLevel: "mid",
+    status: "active",
+  },
+  {
+    title: "Marketing Manager",
+    description: "Lead marketing campaigns and strategies to drive business growth.",
+    requirements: ["Digital marketing", "Campaign management", "Analytics", "5+ years experience"],
+    location: "Los Angeles, CA",
+    type: "full-time",
+    salary: {
+      min: 80000,
+      max: 120000,
+      currency: "USD",
+    },
+    company: {
+      name: "Growth Marketing Co.",
+      industry: "Marketing",
+      size: "25-100 employees",
+      website: "www.growthmarketing.com",
+      location: "Los Angeles, CA",
+    },
+    tags: ["marketing", "digital", "campaigns", "analytics"],
+    experienceLevel: "senior",
+    status: "active",
+  },
+  {
+    title: "Data Scientist",
+    description: "Extract insights from complex data sets to drive business decisions.",
+    requirements: ["Python", "Machine Learning", "Statistics", "3+ years experience"],
+    location: "Boston, MA",
+    type: "full-time",
+    salary: {
+      min: 100000,
+      max: 150000,
+      currency: "USD",
+    },
+    company: {
+      name: "DataInsights Inc.",
+      industry: "Technology",
+      size: "100-500 employees",
+      website: "www.datainsights.com",
+      location: "Boston, MA",
+    },
+    tags: ["data-science", "python", "machine-learning", "statistics"],
+    experienceLevel: "mid",
+    status: "active",
+  },
 ];
 
 const sampleApplications = [
@@ -170,6 +236,17 @@ export async function seedData(employerId: string) {
     await dbConnect();
 
     console.log("🌱 Starting data seeding...");
+
+    // Check if jobs already exist
+    const existingJobs = await Job.countDocuments();
+    if (existingJobs > 0) {
+      console.log(`📊 Found ${existingJobs} existing jobs, skipping creation`);
+      const jobs = await Job.find({ status: "active" }).sort({ createdAt: -1 });
+      return {
+        jobs,
+        message: "Jobs already exist in database",
+      };
+    }
 
     // Create sample jobs
     const createdJobs = [];
