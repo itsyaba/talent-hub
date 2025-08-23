@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/hooks/use-session";
+import { useEmployerDashboard } from "@/hooks/use-employer-dashboard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,11 +17,19 @@ import {
   Plus,
   Eye,
   MessageSquare,
+  RefreshCw,
+  AlertCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 
 export default function EmployerDashboard() {
   const { data: session, isPending: loading } = useSession();
+  const {
+    data: dashboardData,
+    loading: dashboardLoading,
+    error: dashboardError,
+    refreshData,
+  } = useEmployerDashboard();
   const router = useRouter();
 
   useEffect(() => {
@@ -55,17 +64,76 @@ export default function EmployerDashboard() {
     );
   }
 
+  // Show error state if dashboard data fails to load
+  if (dashboardError && !dashboardLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
+              Error Loading Dashboard
+            </h2>
+            <p className="text-slate-600 dark:text-slate-400 mb-4">{dashboardError}</p>
+            <Button onClick={refreshData} className="flex items-center gap-2">
+              <RefreshCw className="w-4 h-4" />
+              Try Again
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
-            Welcome to Your Dashboard
-          </h1>
-          <p className="text-slate-600 dark:text-slate-400">
-            Find top talent and manage your hiring process
-          </p>
+        <div className="mb-8 flex justify-between items-start">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
+              Welcome to Your Dashboard
+            </h1>
+            <p className="text-slate-600 dark:text-slate-400">
+              Find top talent and manage your hiring process
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              onClick={refreshData}
+              variant="outline"
+              size="sm"
+              disabled={dashboardLoading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${dashboardLoading ? "animate-spin" : ""}`} />
+              Refresh
+            </Button>
+            <Button
+              onClick={async () => {
+                try {
+                  const response = await fetch("/api/seed", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ action: "seed" }),
+                  });
+                  if (response.ok) {
+                    toast.success("Sample data added successfully!");
+                    refreshData();
+                  } else {
+                    toast.error("Failed to add sample data");
+                  }
+                } catch (error) {
+                  toast.error("Error adding sample data");
+                }
+              }}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              🌱 Seed Data
+            </Button>
+          </div>
         </div>
 
         {/* Stats Cards */}
@@ -76,8 +144,12 @@ export default function EmployerDashboard() {
               <Briefcase className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">8</div>
-              <p className="text-xs text-muted-foreground">+2 from last month</p>
+              <div className="text-2xl font-bold">
+                {dashboardLoading ? "..." : dashboardData?.stats.activeJobs || 0}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {dashboardData?.jobs.total || 0} total jobs
+              </p>
             </CardContent>
           </Card>
 
@@ -87,19 +159,30 @@ export default function EmployerDashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">156</div>
-              <p className="text-xs text-muted-foreground">+23 from last month</p>
+              <div className="text-2xl font-bold">
+                {dashboardLoading ? "..." : dashboardData?.stats.totalApplications || 0}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {dashboardData?.trends.applicationTrend && dashboardData.trends.applicationTrend > 0
+                  ? "+"
+                  : ""}
+                {dashboardData?.trends.applicationTrend || 0}% from last month
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Interviews</CardTitle>
+              <CardTitle className="text-sm font-medium">Shortlisted</CardTitle>
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12</div>
-              <p className="text-xs text-muted-foreground">+5 from last month</p>
+              <div className="text-2xl font-bold">
+                {dashboardLoading ? "..." : dashboardData?.stats.shortlisted || 0}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {dashboardData?.stats.interviews || 0} interviews scheduled
+              </p>
             </CardContent>
           </Card>
 
@@ -109,8 +192,12 @@ export default function EmployerDashboard() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">3</div>
-              <p className="text-xs text-muted-foreground">+1 from last month</p>
+              <div className="text-2xl font-bold">
+                {dashboardLoading ? "..." : dashboardData?.stats.hired || 0}
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {dashboardData?.stats.rejected || 0} rejected
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -126,69 +213,72 @@ export default function EmployerDashboard() {
               <CardDescription>Latest applications for your job postings</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {[
-                {
-                  name: "Sarah Johnson",
-                  position: "Senior Frontend Developer",
-                  experience: "5 years",
-                  location: "San Francisco, CA",
-                  status: "Under Review",
-                },
-                {
-                  name: "Michael Chen",
-                  position: "React Native Developer",
-                  experience: "3 years",
-                  location: "Remote",
-                  status: "Interview Scheduled",
-                },
-                {
-                  name: "Emily Rodriguez",
-                  position: "UI/UX Designer",
-                  experience: "4 years",
-                  location: "New York, NY",
-                  status: "Shortlisted",
-                },
-              ].map((application, index) => (
-                <div
-                  key={index}
-                  className="p-4 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                >
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="font-semibold text-slate-900 dark:text-white">
-                      {application.name}
-                    </h3>
-                    <Badge
-                      variant={
-                        application.status === "Shortlisted"
-                          ? "default"
-                          : application.status === "Interview Scheduled"
-                          ? "secondary"
-                          : "outline"
-                      }
-                    >
-                      {application.status}
-                    </Badge>
-                  </div>
-                  <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
-                    {application.position}
-                  </div>
-                  <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-3">
-                    <span>{application.experience} experience</span>
-                    <span>•</span>
-                    <span>{application.location}</span>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline">
-                      <Eye className="mr-1 h-3 w-3" />
-                      View Profile
-                    </Button>
-                    <Button size="sm" variant="outline">
-                      <MessageSquare className="mr-1 h-3 w-3" />
-                      Message
-                    </Button>
-                  </div>
+              {dashboardLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="p-4 border rounded-lg animate-pulse">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-2"></div>
+                      <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/3"></div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : dashboardData?.applications.recent &&
+                dashboardData.applications.recent.length > 0 ? (
+                dashboardData.applications.recent.map((application) => (
+                  <div
+                    key={application._id}
+                    className="p-4 border rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-slate-900 dark:text-white">
+                        {application.userId.name}
+                      </h3>
+                      <Badge
+                        variant={
+                          application.status === "shortlisted"
+                            ? "default"
+                            : application.status === "interviewed"
+                            ? "secondary"
+                            : application.status === "hired"
+                            ? "default"
+                            : "outline"
+                        }
+                      >
+                        {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                      </Badge>
+                    </div>
+                    <div className="text-sm text-slate-600 dark:text-slate-400 mb-1">
+                      {application.jobId.title}
+                    </div>
+                    <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400 mb-3">
+                      {application.experience && (
+                        <>
+                          <span>{application.experience} experience</span>
+                          <span>•</span>
+                        </>
+                      )}
+                      <span>{application.jobId.company.location}</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" variant="outline">
+                        <Eye className="mr-1 h-3 w-3" />
+                        View Profile
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <MessageSquare className="mr-1 h-3 w-3" />
+                        Message
+                      </Button>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
+                  <Users className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                  <p>No applications yet</p>
+                  <p className="text-sm">Applications will appear here once candidates apply</p>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -237,19 +327,23 @@ export default function EmployerDashboard() {
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Company Name
                   </label>
-                  <p className="text-slate-900 dark:text-white">TechCorp Inc.</p>
+                  <p className="text-slate-900 dark:text-white">{session.user.name || "Not set"}</p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Industry
                   </label>
-                  <p className="text-slate-900 dark:text-white">Technology</p>
+                  <p className="text-slate-900 dark:text-white">
+                    {dashboardData?.jobs.recent?.[0]?.company?.industry || "Not specified"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Company Size
                   </label>
-                  <p className="text-slate-900 dark:text-white">100-500 employees</p>
+                  <p className="text-slate-900 dark:text-white">
+                    {dashboardData?.jobs.recent?.[0]?.company?.size || "Not specified"}
+                  </p>
                 </div>
               </div>
               <div className="space-y-4">
@@ -257,19 +351,25 @@ export default function EmployerDashboard() {
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Location
                   </label>
-                  <p className="text-slate-900 dark:text-white">San Francisco, CA</p>
+                  <p className="text-slate-900 dark:text-white">
+                    {dashboardData?.jobs.recent?.[0]?.company?.location || "Not specified"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                     Website
                   </label>
-                  <p className="text-slate-900 dark:text-white">www.techcorp.com</p>
+                  <p className="text-slate-900 dark:text-white">
+                    {dashboardData?.jobs.recent?.[0]?.company?.website || "Not specified"}
+                  </p>
                 </div>
                 <div>
                   <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    Founded
+                    Active Jobs
                   </label>
-                  <p className="text-slate-900 dark:text-white">2018</p>
+                  <p className="text-slate-900 dark:text-white">
+                    {dashboardData?.stats.activeJobs || 0} jobs posted
+                  </p>
                 </div>
               </div>
             </div>

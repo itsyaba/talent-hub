@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useSession } from "@/hooks/use-session";
 import { SignOut } from "./auth/sign-out";
+import ThemeSwitcher from "./theme-switcher-01";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,7 +124,8 @@ const Navbar = () => {
           </motion.div>
 
           {/* Sign In Button */}
-          <motion.div className="hidden md:block" variants={itemVariants}>
+          <motion.div className="hidden md:flex items-center space-x-4" variants={itemVariants}>
+            <ThemeSwitcher />
             {session && !isPending ? (
               <SignOut />
             ) : (

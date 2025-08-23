@@ -7,15 +7,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Briefcase, User, Building, MapPin, Calendar, Star, TrendingUp } from "lucide-react";
+import { toast } from "sonner";
 
 export default function TalentDashboard() {
-  const { session, loading } = useSession();
+  const { data: session, isPending: loading } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (loading) return;
 
-    if (!session?.user) {
+    if (!session) {
+      toast.error("Please login to access your dashboard");
       router.push("/login");
       return;
     }
@@ -44,7 +46,7 @@ export default function TalentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
