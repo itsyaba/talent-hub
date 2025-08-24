@@ -35,6 +35,22 @@ interface Application {
   _id: string;
   status: string;
   appliedAt: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  location: string;
+  experience: string;
+  skills: string[];
+  expectedSalary?: number;
+  availability: string;
+  coverLetter: string;
+  resume: {
+    filename: string;
+    url: string;
+    key: string;
+    size?: number;
+    type?: string;
+  };
   jobId: {
     _id: string;
     title: string;
@@ -50,8 +66,6 @@ interface Application {
     email: string;
     image?: string;
   };
-  experience?: string;
-  skills?: string[];
 }
 
 interface DashboardData {

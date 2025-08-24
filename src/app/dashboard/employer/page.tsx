@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import CompanyProfileModal from "@/components/CompanyProfileModal";
+import ApplicationDetailModal from "@/components/ApplicationDetailModal";
 import {
   Briefcase,
   Users,
@@ -34,6 +35,8 @@ export default function EmployerDashboard() {
   } = useEmployerDashboard();
   const router = useRouter();
   const [showCompanyProfileModal, setShowCompanyProfileModal] = useState(false);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
 
   useEffect(() => {
     if (loading) return;
@@ -54,6 +57,29 @@ export default function EmployerDashboard() {
       return;
     }
   }, [session, loading, router]);
+
+  const handleApplicationStatusUpdate = async (applicationId: string, newStatus: string) => {
+    try {
+      const response = await fetch(`/api/applications/${applicationId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update application status");
+      }
+
+      // Refresh dashboard data to show updated status
+      refreshData();
+    } catch (error) {
+      console.error("Error updating application status:", error);
+      throw error;
+    }
+  };
 
   // Show loading while checking session
   if (loading || !session?.user) {
@@ -272,9 +298,16 @@ export default function EmployerDashboard() {
                       <span>{application.jobId.company.location}</span>
                     </div>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedApplication(application);
+                          setShowApplicationModal(true);
+                        }}
+                      >
                         <Eye className="mr-1 h-3 w-3" />
-                        View Profile
+                        View Details
                       </Button>
                       <Button size="sm" variant="outline">
                         <MessageSquare className="mr-1 h-3 w-3" />
@@ -370,6 +403,19 @@ export default function EmployerDashboard() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Application Detail Modal */}
+        {selectedApplication && (
+          <ApplicationDetailModal
+            isOpen={showApplicationModal}
+            onClose={() => {
+              setShowApplicationModal(false);
+              setSelectedApplication(null);
+            }}
+            application={selectedApplication}
+            onStatusUpdate={handleApplicationStatusUpdate}
+          />
+        )}
 
         {/* Company Profile Edit Modal */}
         <CompanyProfileModal

@@ -36,6 +36,9 @@ export async function GET(request: NextRequest) {
     })
       .populate("jobId", "title company location type")
       .populate("userId", "name email image")
+      .select(
+        "_id status appliedAt fullName email phone location experience skills expectedSalary availability coverLetter resume jobId userId"
+      )
       .sort({ appliedAt: -1 })
       .lean();
 
