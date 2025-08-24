@@ -5,7 +5,7 @@ import { Job } from "@/models";
 // Ensure models are registered
 import "@/models";
 
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     await dbConnect();
 

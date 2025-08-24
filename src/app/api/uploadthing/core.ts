@@ -7,15 +7,16 @@ const f = createUploadthing();
 export const ourFileRouter = {
   resumeUploader: f({
     pdf: {
-      maxFileSize: "8mb",
+      maxFileSize: "8MB",
       maxFileCount: 1,
     },
-    doc: {
-      maxFileSize: "8mb",
+    // @ts-ignore
+    docs: {
+      maxFileSize: "8MB",
       maxFileCount: 1,
     },
     docx: {
-      maxFileSize: "8mb",
+      maxFileSize: "8MB",
       maxFileCount: 1,
     },
   })

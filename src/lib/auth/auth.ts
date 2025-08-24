@@ -57,18 +57,6 @@ export const auth = betterAuth({
         defaultValue: "user",
         enum: ["user", "admin", "employer"],
       },
-
-      companyProfile: {
-        type: "json",
-        required: false,
-        defaultValue: undefined,
-        properties: {
-          industry: { type: "string", required: false },
-          size: { type: "string", required: false },
-          website: { type: "string", required: false },
-          location: { type: "string", required: false },
-        },
-      },
     },
     update: {
       before: async (session: Record<string, unknown>) => {

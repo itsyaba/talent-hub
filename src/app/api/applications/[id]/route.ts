@@ -4,7 +4,7 @@ import dbConnect from "@/lib/db";
 import { Application, Job } from "@/models";
 
 // PATCH /api/applications/[id] - Update application status
-export async function PATCH(request: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
 
@@ -22,7 +22,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { status, interviewNotes } = body;
 
@@ -74,7 +74,7 @@ export async function PATCH(request: NextRequest, { params }: { params: { id: st
 }
 
 // GET /api/applications/[id] - Get application details
-export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
 
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
     await dbConnect();
 
-    const { id } = params;
+    const { id } = await params;
 
     // Find the application
     const application = await Application.findById(id).populate([

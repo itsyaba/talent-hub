@@ -20,8 +20,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useSession } from "@/hooks/use-session";
-import ApplicationModal from "@/components/ApplicationModal";
 import { toast } from "sonner";
+import ApplicationModal from "@/components/ApplicationModal";
 
 interface Job {
   _id: string;
