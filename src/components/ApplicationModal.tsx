@@ -13,6 +13,7 @@ import {
   IconBriefcase,
   IconCalendar,
   IconLoader2,
+  IconTrash,
 } from "@tabler/icons-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { UploadButton } from "@/utils/uploadthing";
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -51,7 +53,13 @@ interface ApplicationFormData {
   expectedSalary?: number;
   availability: string;
   coverLetter: string;
-  resume: File | null;
+  resume: {
+    filename: string;
+    url: string;
+    key: string;
+    size?: number;
+    type?: string;
+  } | null;
 }
 
 const ApplicationModal = ({
@@ -81,7 +89,11 @@ const ApplicationModal = ({
 
   const handleInputChange = (
     field: keyof ApplicationFormData,
-    value: string | number | File | null
+    value:
+      | string
+      | number
+      | { filename: string; url: string; key: string; size?: number; type?: string }
+      | null
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
@@ -110,26 +122,30 @@ const ApplicationModal = ({
     }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Check file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size must be less than 5MB");
-        return;
-      }
-      // Check file type
-      const allowedTypes = [
-        "application/pdf",
-        "application/msword",
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      ];
-      if (!allowedTypes.includes(file.type)) {
-        toast.error("Please upload a PDF, DOC, or DOCX file");
-        return;
-      }
-      setFormData((prev) => ({ ...prev, resume: file }));
+  const handleResumeUpload = (res: any) => {
+    if (res && res.length > 0) {
+      const file = res[0];
+      setFormData((prev) => ({
+        ...prev,
+        resume: {
+          filename: file.name,
+          url: file.url,
+          key: file.key,
+          size: file.size,
+          type: file.type,
+        },
+      }));
+      toast.success("Resume uploaded successfully!");
     }
+  };
+
+  const handleResumeError = (error: Error) => {
+    toast.error(`Upload failed: ${error.message}`);
+  };
+
+  const removeResume = () => {
+    setFormData((prev) => ({ ...prev, resume: null }));
+    toast.success("Resume removed");
   };
 
   const validateForm = (): boolean => {
@@ -405,27 +421,38 @@ const ApplicationModal = ({
                 <CardContent>
                   <Label htmlFor="resume">Upload your resume (PDF, DOC, DOCX) *</Label>
                   <div className="mt-2">
-                    <Input
-                      id="resume"
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleFileChange}
-                      className={errors.resume ? "border-destructive" : ""}
-                    />
+                    {!formData.resume ? (
+                      <UploadButton
+                        endpoint="resumeUploader"
+                        onClientUploadComplete={handleResumeUpload}
+                        onUploadError={handleResumeError}
+                        className="w-full"
+                      />
+                    ) : (
+                      <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+                        <IconFile className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm text-foreground">{formData.resume.filename}</span>
+                        {formData.resume.size && (
+                          <span className="text-xs text-muted-foreground">
+                            ({(formData.resume.size / 1024 / 1024).toFixed(2)} MB)
+                          </span>
+                        )}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="sm"
+                          onClick={removeResume}
+                          className="ml-auto h-6 w-6 p-0"
+                        >
+                          <IconTrash className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    )}
                     <p className="text-xs text-muted-foreground mt-1">
                       Maximum file size: 5MB. Supported formats: PDF, DOC, DOCX
                     </p>
                     {errors.resume && (
                       <p className="text-sm text-destructive mt-1">{errors.resume}</p>
-                    )}
-                    {formData.resume && (
-                      <div className="flex items-center gap-2 mt-2 p-2 bg-muted rounded-md">
-                        <IconFile className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm text-foreground">{formData.resume.name}</span>
-                        <span className="text-xs text-muted-foreground">
-                          ({(formData.resume.size / 1024 / 1024).toFixed(2)} MB)
-                        </span>
-                      </div>
                     )}
                   </div>
                 </CardContent>

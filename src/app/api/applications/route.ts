@@ -121,7 +121,7 @@ export async function POST(request: NextRequest) {
 
     await dbConnect();
 
-    // Handle FormData for file uploads
+    // Handle FormData for the application
     const formData = await request.formData();
     const jobId = formData.get("jobId") as string;
     const fullName = formData.get("fullName") as string;
@@ -133,7 +133,9 @@ export async function POST(request: NextRequest) {
     const expectedSalary = formData.get("expectedSalary") as string;
     const availability = formData.get("availability") as string;
     const coverLetter = formData.get("coverLetter") as string;
-    const resumeFile = formData.get("resume") as File;
+    const resumeData = JSON.parse((formData.get("resume") as string) || "{}");
+
+    console.log("Resume data:", resumeData);
 
     // Validate required fields
     if (!jobId) {
@@ -150,11 +152,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!resumeFile) {
+    if (!resumeData.url || !resumeData.key || !resumeData.filename) {
       return NextResponse.json(
         {
           success: false,
-          error: "Resume file is required",
+          error: "Resume file is required and must be a valid file",
         },
         { status: 400 }
       );
@@ -183,16 +185,16 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Handle file upload (for now, we'll store file info, but in production you'd want to upload to cloud storage)
+    // Store resume info from UploadThing
     const resumeInfo = {
-      filename: resumeFile.name,
-      size: resumeFile.size,
-      type: resumeFile.type,
-      // In production, you'd upload the file to cloud storage and store the URL
-      // For now, we'll store basic file info
+      filename: resumeData.filename || "",
+      url: resumeData.url || "",
+      key: resumeData.key || "",
+      size: resumeData.size || 0,
+      type: resumeData.type || "",
     };
 
-    console.log("Resume info:", resumeInfo);
+    console.log("Resume info being stored:", resumeInfo);
     console.log("Skills:", skills);
     console.log("Expected salary:", expectedSalary);
 
@@ -214,6 +216,8 @@ export async function POST(request: NextRequest) {
     };
 
     console.log("Application data being sent to model:", applicationData);
+    console.log("Resume field type:", typeof applicationData.resume);
+    console.log("Resume field value:", applicationData.resume);
 
     const application = new Application(applicationData);
 

@@ -58,7 +58,13 @@ interface ApplicationFormData {
   expectedSalary?: number;
   availability: string;
   coverLetter: string;
-  resume: File | null;
+  resume: {
+    filename: string;
+    url: string;
+    key: string;
+    size?: number;
+    type?: string;
+  } | null;
 }
 
 const JobDetailPage = () => {
@@ -120,7 +126,7 @@ const JobDetailPage = () => {
       formData.append("availability", applicationData.availability);
       formData.append("coverLetter", applicationData.coverLetter);
       if (applicationData.resume) {
-        formData.append("resume", applicationData.resume);
+        formData.append("resume", JSON.stringify(applicationData.resume));
       }
 
       const response = await fetch("/api/applications", {

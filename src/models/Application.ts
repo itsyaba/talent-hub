@@ -47,16 +47,19 @@ const applicationSchema = new Schema(
         type: String,
         required: [true, "Resume filename is required"],
       },
+      url: {
+        type: String,
+        required: [true, "Resume file URL is required"],
+      },
+      key: {
+        type: String,
+        required: [true, "Resume file key is required"],
+      },
       size: {
         type: Number,
-        required: [true, "Resume file size is required"],
+        required: false,
       },
       type: {
-        type: String,
-        required: [true, "Resume file type is required"],
-      },
-      // In production, you'd also store the file URL
-      url: {
         type: String,
         required: false,
       },
@@ -101,7 +104,11 @@ const applicationSchema = new Schema(
 // Ensure one application per user per job
 applicationSchema.index({ jobId: 1, userId: 1 }, { unique: true });
 
-const Application =
-  mongoose.models.Application || mongoose.model("Application", applicationSchema, "application");
+// Force recompilation by deleting the old model if it exists
+if (mongoose.models.Application) {
+  delete mongoose.models.Application;
+}
+
+const Application = mongoose.model("Application", applicationSchema, "application");
 
 export default Application;

@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { admin, magicLink } from "better-auth/plugins";
 import { sendEmail } from "./email-service";
-import dbConnect from "@/lib/db";
+import dbConnect from "../db";
 import { nextCookies } from "better-auth/next-js";
 import {
   emailVerificationTemplate,
@@ -57,10 +57,11 @@ export const auth = betterAuth({
         defaultValue: "user",
         enum: ["user", "admin", "employer"],
       },
+
       companyProfile: {
-        type: "object",
+        type: "json",
         required: false,
-        defaultValue: {},
+        defaultValue: undefined,
         properties: {
           industry: { type: "string", required: false },
           size: { type: "string", required: false },
@@ -79,7 +80,7 @@ export const auth = betterAuth({
     },
   },
   emailVerification: {
-    enabled: false,
+    enabled: true,
     sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
       await sendEmail({
         to: user.email,
