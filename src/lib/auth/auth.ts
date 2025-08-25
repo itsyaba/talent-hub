@@ -57,6 +57,11 @@ export const auth = betterAuth({
         defaultValue: "user",
         enum: ["user", "admin", "employer"],
       },
+      onboardingCompleted: {
+        type: "boolean",
+        required: false,
+        defaultValue: false,
+      },
     },
     update: {
       before: async (session: Record<string, unknown>) => {
