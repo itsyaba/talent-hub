@@ -66,6 +66,7 @@ _Application tracking, job recommendations, and personal insights_
 - **Language**: TypeScript 5
 - **UI Library**: React 19 with modern hooks
 - **Styling**: Tailwind CSS v4 with custom design system
+- **File upload**: Uploadthing to store resume online
 - **Components**: shadcn/ui with Radix UI primitives
 - **Animations**: Framer Motion for smooth interactions
 - **Icons**: Lucide React & Tabler Icons
@@ -114,7 +115,7 @@ npm install
 
 ```env
 # Database
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/talent-hub
+MONGODB_URI=
 
 # Authentication
 AUTH_SECRET=your-super-secret-auth-key-here

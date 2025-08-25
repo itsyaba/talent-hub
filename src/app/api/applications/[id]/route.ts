@@ -3,11 +3,12 @@ import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
 import { Application, Job } from "@/models";
 import { NotificationService } from "@/lib/notification-service";
+import getUserSession from "@/hooks/use-get-user-session";
 
 // PATCH /api/applications/[id] - Update application status
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
@@ -97,7 +98,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 // GET /api/applications/[id] - Get application details
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });

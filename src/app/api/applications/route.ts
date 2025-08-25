@@ -3,11 +3,12 @@ import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
 import { Application, Job, User } from "@/models";
 import { NotificationService } from "@/lib/notification-service";
+import getUserSession from "@/hooks/use-get-user-session";
 
 // GET /api/applications - Get applications with optional filtering
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest) {
 // POST /api/applications - Apply for a job
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });

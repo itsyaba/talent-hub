@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
 import { Job, Application } from "@/models";
+import getUserSession from "@/hooks/use-get-user-session";
 
 // GET /api/employer/dashboard - Get employer dashboard data
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });

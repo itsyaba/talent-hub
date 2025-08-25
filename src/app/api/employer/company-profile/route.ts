@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth/auth";
+
 import dbConnect from "@/lib/db";
 import { User } from "@/models";
 import { NotificationService } from "@/lib/notification-service";
 
 // Ensure models are registered
 import "@/models";
+import getUserSession from "@/hooks/use-get-user-session";
 
 // PATCH /api/employer/company-profile - Update company profile
 export async function PATCH(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
@@ -83,7 +84,7 @@ export async function PATCH(request: NextRequest) {
 // GET /api/employer/company-profile - Get company profile
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
 
     if (!session) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });

@@ -5,11 +5,12 @@ import { User, Job, Application } from "@/models";
 
 // Ensure models are registered
 import "@/models";
+import getUserSession from "@/hooks/use-get-user-session";
 
 export async function GET(request: NextRequest) {
   try {
     // Check authentication
-    const session = await auth.api.getSession({ headers: request.headers });
+    const session = await getUserSession();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
