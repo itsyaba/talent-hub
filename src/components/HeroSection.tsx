@@ -1,9 +1,47 @@
 "use client";
 
-import { IconSearch, IconMapPin, IconChevronDown } from "@tabler/icons-react";
+import {
+  IconSearch,
+  IconMapPin,
+  IconChevronDown,
+  IconBriefcase,
+  IconBuilding,
+  IconMapPin as IconLocation,
+} from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+interface Job {
+  _id: string;
+  title: string;
+  company: {
+    name: string;
+    location?: string;
+  };
+  location: string;
+  type: string;
+  salary?: {
+    min?: number;
+    max?: number;
+    currency?: string;
+  };
+  tags: string[];
+}
 
 const HeroSection = () => {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<Job[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
+
   const popularSearches = [
     "designer",
     "Writer",
@@ -24,6 +62,85 @@ const HeroSection = () => {
     { count: "265", title: "job offers In Marketing & Communication" },
     { count: "324", title: "job offers Project Management" },
   ];
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Search jobs when query changes
+  useEffect(() => {
+    const searchJobs = async () => {
+      if (searchQuery.trim().length < 2) {
+        setSearchResults([]);
+        setShowDropdown(false);
+        return;
+      }
+
+      setIsSearching(true);
+      try {
+        const response = await fetch(
+          `/api/jobs?search=${encodeURIComponent(searchQuery)}&status=active&limit=8`
+        );
+        const data = await response.json();
+
+        if (data.success) {
+          setSearchResults(data.data);
+          setShowDropdown(data.data.length > 0);
+        } else {
+          setSearchResults([]);
+          setShowDropdown(false);
+        }
+      } catch (error) {
+        console.error("Error searching jobs:", error);
+        setSearchResults([]);
+        setShowDropdown(false);
+      } finally {
+        setIsSearching(false);
+      }
+    };
+
+    const debounceTimer = setTimeout(searchJobs, 300);
+    return () => clearTimeout(debounceTimer);
+  }, [searchQuery]);
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      router.push(`/jobs?search=${encodeURIComponent(searchQuery.trim())}`);
+      setShowDropdown(false);
+    }
+  };
+
+  const handleJobSelect = (job: Job) => {
+    setSelectedJob(job);
+    setSearchQuery(job.title);
+    setShowDropdown(false);
+    router.push(`/jobs/${job._id}`);
+  };
+
+  const handlePopularSearch = (search: string) => {
+    setSearchQuery(search);
+    router.push(`/jobs?search=${encodeURIComponent(search)}`);
+  };
+
+  const formatSalary = (salary?: { min?: number; max?: number; currency?: string }) => {
+    if (!salary?.min && !salary?.max) return "Salary not specified";
+    if (salary.min && salary.max) {
+      return `${salary.currency || "$"}${salary.min.toLocaleString()} - ${
+        salary.currency || "$"
+      }${salary.max.toLocaleString()}`;
+    }
+    if (salary.min) return `${salary.currency || "$"}${salary.min.toLocaleString()}+`;
+    if (salary.max) return `Up to ${salary.currency || "$"}${salary.max.toLocaleString()}`;
+    return "Salary not specified";
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -113,23 +230,97 @@ const HeroSection = () => {
 
             {/* Search Interface */}
             <motion.div
-              className="bg-card p-3 rounded-2xl shadow-lg border border-border/50 w-10/12"
+              className="relative bg-card p-3 rounded-2xl shadow-lg border border-border/50 w-10/12"
               variants={itemVariants as any}
               whileHover={{ scale: 1.02, y: -2 }}
+              ref={searchRef}
             >
               <div className="flex flex-row gap-4 w-full">
-                <div className="w-full">
-                  <input
+                <div className="w-full relative">
+                  <Input
                     type="text"
                     placeholder="Job Title or Keyword"
-                    className="w-full px-4 py-4 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    className="w-full px-4 py-4 border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent text-foreground placeholder:text-muted-foreground h-full"
                   />
+
+                  {/* Search Dropdown */}
+                  {showDropdown && (
+                    <motion.div
+                      className="absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-2xl z-[999] max-h-96 overflow-y-auto"
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                    >
+                      {isSearching ? (
+                        <div className="p-4 text-center text-muted-foreground">
+                          <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-2"></div>
+                          Searching jobs...
+                        </div>
+                      ) : searchResults.length > 0 ? (
+                        <div className="p-2">
+                          {searchResults.map((job) => (
+                            <motion.div
+                              key={job._id}
+                              className="p-3 hover:bg-accent rounded-lg cursor-pointer transition-colors"
+                              whileHover={{ backgroundColor: "hsl(var(--accent))" }}
+                              onClick={() => handleJobSelect(job)}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center">
+                                  <IconBriefcase className="w-5 h-5 text-primary" />
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h4 className="font-semibold text-foreground text-sm truncate">
+                                    {job.title}
+                                  </h4>
+                                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                    <IconBuilding className="w-3 h-3" />
+                                    <span className="truncate">{job.company.name}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                                    <IconLocation className="w-3 h-3" />
+                                    <span className="truncate">{job.location}</span>
+                                  </div>
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <Badge variant="secondary" className="text-xs">
+                                      {job.type}
+                                    </Badge>
+                                    {job.salary?.min && (
+                                      <Badge variant="outline" className="text-xs">
+                                        {formatSalary(job.salary)}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          ))}
+                          <div className="p-3 border-t border-border">
+                            <Button
+                              onClick={handleSearch}
+                              className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+                            >
+                              View All Results
+                            </Button>
+                          </div>
+                        </div>
+                      ) : searchQuery.trim().length >= 2 ? (
+                        <div className="p-4 text-center text-muted-foreground">
+                          No jobs found for "{searchQuery}"
+                        </div>
+                      ) : null}
+                    </motion.div>
+                  )}
                 </div>
 
                 <motion.button
                   className="bg-primary text-primary-foreground p-4 rounded-xl hover:bg-primary/90 transition-all duration-200 flex-shrink-0 shadow-lg hover:shadow-xl"
                   whileHover={{ scale: 1.1, rotate: 5 }}
                   whileTap={{ scale: 0.9 }}
+                  onClick={handleSearch}
                 >
                   <IconSearch size={24} />
                 </motion.button>
@@ -151,6 +342,7 @@ const HeroSection = () => {
                       whileInView={{ opacity: 1, scale: 1 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.1 }}
+                      onClick={() => handlePopularSearch(search)}
                     >
                       {search}
                     </motion.span>

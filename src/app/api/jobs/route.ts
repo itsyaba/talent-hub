@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get("type");
     const location = searchParams.get("location");
     const search = searchParams.get("search");
+    const experienceLevel = searchParams.get("experienceLevel");
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "10");
     const skip = (page - 1) * limit;
@@ -26,8 +27,15 @@ export async function GET(request: NextRequest) {
     if (status) filter.status = status;
     if (type) filter.type = type;
     if (location) filter.location = { $regex: location, $options: "i" };
+    if (experienceLevel) filter.experienceLevel = experienceLevel;
     if (search) {
-      filter.$text = { $search: search };
+      // Use regex search for better compatibility
+      filter.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+        { tags: { $regex: search, $options: "i" } },
+        { "company.name": { $regex: search, $options: "i" } },
+      ];
     }
 
     // Get jobs with pagination
