@@ -11,6 +11,9 @@ export async function GET(request: NextRequest) {
   try {
     // Check authentication
     const session = await getUserSession();
+
+    console.log("session", session);
+
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
