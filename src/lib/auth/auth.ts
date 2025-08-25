@@ -11,110 +11,88 @@ import {
 } from "./templates/templates";
 import mongoose from "mongoose";
 
-// Lazy initialization of auth instance
-let authInstance: any = null;
+await dbConnect();
+const db = mongoose.connection.db;
 
-// Function to get or create auth instance
-async function getAuth() {
-  if (!authInstance) {
-    await dbConnect();
-    const db = mongoose.connection.db;
-
-    if (!db) {
-      throw new Error("Database connection is not established.");
-    }
-
-    authInstance = betterAuth({
-      // trustedOrigins: ["http://localhost:3000"],
-      database: mongodbAdapter(db),
-      emailAndPassword: {
-        enabled: true,
-        requireEmailVerification: false,
-        sendResetPassword: async ({ user, url, token }, request) => {
-          await sendEmail({
-            to: user.email,
-            subject: "Reset Your Password ",
-            html: passwordResetTemplate(url),
-          });
-          console.log("Send Reset Password : ", token, request);
-        },
-      },
-      socialProviders: {
-        google: {
-          clientId: process.env.GOOGLE_CLIENT_ID as string,
-          clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-        },
-      },
-
-      databaseHooks: {
-        session: {
-          create: {
-            before: async (session) => {
-              console.log("session create", session);
-            },
-          },
-        },
-      },
-      user: {
-        additionalFields: {
-          role: {
-            type: "string",
-            required: false,
-            defaultValue: "user",
-            enum: ["user", "admin", "employer"],
-          },
-        },
-        update: {
-          before: async (session: Record<string, unknown>) => {
-            console.log("session update before", session);
-          },
-          after: async (session: Record<string, unknown>) => {
-            console.log("session update after", session);
-          },
-        },
-      },
-      emailVerification: {
-        enabled: true,
-        sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
-          await sendEmail({
-            to: user.email,
-            subject: "Welcome to Service Inc - Verify Your Email",
-            html: emailVerificationTemplate(url),
-          });
-        },
-      },
-      plugins: [
-        admin(),
-        nextCookies(),
-        magicLink({
-          sendMagicLink: async ({ email, token, url }, request) => {
-            await sendEmail({
-              to: email,
-              subject: "Sign In to Service Inc",
-              html: magicLinkTemplate(url),
-            });
-            console.log(token, request);
-          },
-        }),
-      ],
-    });
-  }
-
-  return authInstance;
+if (!db) {
+  throw new Error("Database connection is not established.");
 }
 
-// Export auth with lazy initialization
-export const auth = {
-  api: {
-    getSession: async (options: any) => {
-      const authInstance = await getAuth();
-      return authInstance.api.getSession(options);
+export const auth = betterAuth({
+  // trustedOrigins: ["http://localhost:3000"],
+  database: mongodbAdapter(db),
+  emailAndPassword: {
+    enabled: true,
+    requireEmailVerification: false,
+    sendResetPassword: async ({ user, url, token }, request) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Reset Your Password ",
+        html: passwordResetTemplate(url),
+      });
+      console.log("Send Reset Password : ", token, request);
     },
-    // Add other methods as needed
   },
-  // Add other properties as needed
-};
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+    },
+  },
 
-export type UserSession = any; // We'll need to properly type this
-export type User = any; // We'll need to properly type this
-export type Session = any; // We'll need to properly type this
+  databaseHooks: {
+    session: {
+      create: {
+        before: async (session) => {
+          console.log("session create", session);
+        },
+      },
+    },
+  },
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        defaultValue: "user",
+        enum: ["user", "admin", "employer"],
+      },
+    },
+    update: {
+      before: async (session: Record<string, unknown>) => {
+        console.log("session update before", session);
+      },
+      after: async (session: Record<string, unknown>) => {
+        console.log("session update after", session);
+      },
+    },
+  },
+  emailVerification: {
+    enabled: true,
+    sendVerificationEmail: async ({ user, url }: { user: { email: string }; url: string }) => {
+      await sendEmail({
+        to: user.email,
+        subject: "Verify Your Email",
+        html: emailVerificationTemplate(url),
+      });
+    },
+  },
+  plugins: [
+    admin(),
+    nextCookies(),
+    magicLink({
+      sendMagicLink: async ({ email, token, url }, request) => {
+        await sendEmail({
+          to: email,
+          subject: "Sign In to Service Inc",
+          html: magicLinkTemplate(url),
+        });
+        console.log(token, request);
+      },
+    }),
+  ],
+});
+
+export type UserSession = typeof auth.$Infer.Session;
+export type User = UserSession["user"];
+export type Session = UserSession["session"];
