@@ -56,18 +56,6 @@ export default function EmployerDashboard() {
       }
       return;
     }
-
-    // Send welcome notification if this is the first time accessing dashboard
-    if (session.user.id) {
-      fetch("/api/notifications/welcome", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }).catch((error) => {
-        console.error("Error sending welcome notification:", error);
-      });
-    }
   }, [session, loading, router]);
 
   const handleApplicationStatusUpdate = async (applicationId: string, newStatus: string) => {
@@ -108,7 +96,7 @@ export default function EmployerDashboard() {
   // Show error state if dashboard data fails to load
   if (dashboardError && !dashboardLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="text-center">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -127,7 +115,7 @@ export default function EmployerDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-12">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8 flex justify-between items-start">
@@ -340,7 +328,7 @@ export default function EmployerDashboard() {
         </div>
 
         {/* Company Profile Section */}
-        <Card className="mt-8">
+        <Card className="pt-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Building className="h-5 w-5 text-blue-600" />

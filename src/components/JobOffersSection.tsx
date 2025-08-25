@@ -233,6 +233,7 @@ const JobOffersSection = () => {
 
   return (
     <motion.section
+      id="jobs"
       className="py-16 bg-muted/30"
       initial="hidden"
       whileInView="visible"

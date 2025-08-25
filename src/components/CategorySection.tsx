@@ -71,6 +71,7 @@ const CategorySection = () => {
 
   return (
     <motion.section
+      id="categories"
       className="py-16 bg-background"
       initial="hidden"
       whileInView="visible"

@@ -77,15 +77,7 @@ const Navbar = () => {
             variants={itemVariants}
           >
             <motion.a
-              href="#"
-              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Demos
-            </motion.a>
-            <motion.a
-              href="#"
+              href="#jobs"
               className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -93,7 +85,15 @@ const Navbar = () => {
               Find Jobs
             </motion.a>
             <motion.a
-              href="#"
+              href="#how-it-works"
+              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              How It Works
+            </motion.a>
+            <motion.a
+              href="#companies"
               className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -101,28 +101,12 @@ const Navbar = () => {
               Companies
             </motion.a>
             <motion.a
-              href="#"
+              href="#categories"
               className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Candidates
-            </motion.a>
-            <motion.a
-              href="#"
-              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Blog
-            </motion.a>
-            <motion.a
-              href="#"
-              className="text-foreground hover:text-primary transition-colors duration-200 font-medium"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Pages
+              Job Categories
             </motion.a>
           </motion.div>
 
@@ -131,7 +115,20 @@ const Navbar = () => {
             <NotificationBell />
             <ThemeSwitcher />
             {session && !isPending ? (
-              <SignOut />
+              <>
+                {/* {session.user.role === "admin" && (
+                  <Link href="/dashboard/admin">
+                    <motion.button
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-all duration-200 font-medium"
+                      whileHover={{ scale: 1.05, y: -2 }}
+                      whileTap={{ scale: 0.95 }}
+                    >
+                      Admin Dashboard
+                    </motion.button>
+                  </Link>
+                )} */}
+                <SignOut />
+              </>
             ) : (
               <Link href="/login">
                 <motion.button
@@ -175,54 +172,55 @@ const Navbar = () => {
                 transition={{ delay: 0.1 }}
               >
                 <motion.a
-                  href="#"
-                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
-                  whileHover={{ x: 10 }}
-                >
-                  Demos
-                </motion.a>
-                <motion.a
-                  href="#"
+                  href="#jobs"
                   className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
                   whileHover={{ x: 10 }}
                 >
                   Find Jobs
                 </motion.a>
                 <motion.a
-                  href="#"
+                  href="#how-it-works"
+                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
+                  whileHover={{ x: 10 }}
+                >
+                  How It Works
+                </motion.a>
+                <motion.a
+                  href="#companies"
                   className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
                   whileHover={{ x: 10 }}
                 >
                   Companies
                 </motion.a>
                 <motion.a
-                  href="#"
+                  href="#categories"
                   className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
                   whileHover={{ x: 10 }}
                 >
-                  Candidates
+                  Job Categories
                 </motion.a>
-                <motion.a
-                  href="#"
-                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
-                  whileHover={{ x: 10 }}
-                >
-                  Blog
-                </motion.a>
-                <motion.a
-                  href="#"
-                  className="text-foreground hover:text-primary transition-colors duration-200 font-medium py-2"
-                  whileHover={{ x: 10 }}
-                >
-                  Pages
-                </motion.a>
-                <motion.button
-                  className="bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:bg-primary/90 transition-all duration-200 font-medium w-full mt-4"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  Sign in
-                </motion.button>
+                {session && !isPending && session.user.role === "admin" && (
+                  <Link href="/dashboard/admin">
+                    <motion.button
+                      className="bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition-all duration-200 font-medium w-full"
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Admin Dashboard
+                    </motion.button>
+                  </Link>
+                )}
+                {session && !isPending ? (
+                  <SignOut />
+                ) : (
+                  <motion.button
+                    className="bg-primary text-primary-foreground px-6 py-3 rounded-xl hover:bg-primary/90 transition-all duration-200 font-medium w-full mt-4"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    Sign in
+                  </motion.button>
+                )}
               </motion.div>
             </motion.div>
           )}

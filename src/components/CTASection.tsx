@@ -59,6 +59,7 @@ const CTASection = () => {
 
   return (
     <motion.section
+      id="companies"
       className="py-20 bg-primary relative overflow-hidden"
       initial="hidden"
       whileInView="visible"

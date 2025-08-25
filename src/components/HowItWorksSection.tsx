@@ -79,6 +79,7 @@ const HowItWorksSection = () => {
 
   return (
     <motion.section
+      id="how-it-works"
       className="py-20 bg-background"
       initial="hidden"
       whileInView="visible"

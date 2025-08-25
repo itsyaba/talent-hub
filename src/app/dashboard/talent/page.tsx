@@ -64,7 +64,7 @@ export default function TalentDashboard() {
   // Show dashboard loading
   if (dashboardLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
@@ -94,7 +94,7 @@ export default function TalentDashboard() {
   // Show error state
   if (dashboardError) {
     return (
-      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">
@@ -160,7 +160,7 @@ export default function TalentDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 mt-12">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 pt-12">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="mb-8">
