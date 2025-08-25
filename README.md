@@ -4,8 +4,7 @@ A comprehensive, full-stack job portal platform built with Next.js 15, TypeScrip
 
 ## 🚀 Live Demo
 
-**Frontend**: [https://talent-hub.vercel.app](https://talent-hub.vercel.app)  
-**Backend**: [https://talent-hub-api.onrender.com](https://talent-hub-api.onrender.com)
+**Frontend**: [https://talent-hub.vercel.app](https://talent-hub.vercel.app)
 
 ## ✨ Key Features
 
@@ -40,6 +39,7 @@ A comprehensive, full-stack job portal platform built with Next.js 15, TypeScrip
 - **File Management**: Secure resume uploads and document handling
 - **Advanced Search**: AI-powered job matching and intelligent recommendations
 - **Performance Optimized**: Built with Next.js 15 and optimized for speed
+- **Google Auth with Better Auth**: Auth with better auth library
 
 ## 🖥️ Dashboard Previews
 
@@ -187,7 +187,7 @@ TalentHub provides a comprehensive REST API with the following main endpoints:
 - **Jobs**: `/api/jobs/*` - Job CRUD operations and search
 - **Applications**: `/api/applications/*` - Job application management
 - **Employer**: `/api/employer/*` - Employer-specific operations
-- **Talent**: `/api/talent/*` - Talent-specific operations
+- **applicant**: `/api/talent/*` - Applicant-specific operations
 - **Admin**: `/api/admin/*` - Administrative functions
 - **Notifications**: `/api/notifications/*` - Real-time notification system
 - **File Upload**: `/api/uploadthing/*` - Secure file handling
