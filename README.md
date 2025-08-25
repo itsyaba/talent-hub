@@ -1,68 +1,105 @@
-# TalentHub - Mini Job Portal Platform
+# TalentHub - Modern Job Portal Platform
 
-A modern, full-stack job portal platform where companies can post job listings, developers can apply for jobs, and employers can manage applications. Built with Next.js 15, TypeScript, MongoDB, and Tailwind CSS.
+A comprehensive, full-stack job portal platform built with Next.js 15, TypeScript, and MongoDB. TalentHub connects talented developers with innovative companies through an intuitive, feature-rich platform with role-based access control, real-time notifications, and professional dashboards.
 
-## 🎯 Project Overview
+## 🚀 Live Demo
 
-TalentHub is a comprehensive job portal that connects talented developers with innovative companies. The platform features role-based access control, real-time notifications, file uploads, and a professional dashboard for both employers and job seekers.
+**Frontend**: [https://talent-hub.vercel.app](https://talent-hub.vercel.app)  
+**Backend**: [https://talent-hub-api.onrender.com](https://talent-hub-api.onrender.com)
 
-## ✨ Features
+## ✨ Key Features
 
-### **For Job Seekers (Talent)**
+### 🎯 **For Job Seekers (Talent)**
 
-- Browse and search available job listings
-- Apply to jobs with resume upload and cover letter
-- Track application status and history
-- Personal dashboard with application analytics
-- Real-time notifications for application updates
+- **Smart Job Discovery**: Advanced search with filters for location, type, experience level, and salary
+- **One-Click Applications**: Streamlined application process with resume upload and cover letter
+- **Application Tracking**: Real-time status updates and comprehensive application history
+- **Personal Dashboard**: Analytics, recommended jobs, and profile insights
+- **Professional Profile**: Skills showcase, experience highlights, and portfolio management
 
-### **For Employers**
+### 🏢 **For Employers**
 
-- Post and manage job listings
-- Review and manage job applications
-- Company profile management
-- Dashboard with application analytics
-- Real-time notifications for new applications
+- **Job Management**: Create, edit, and manage job postings with rich descriptions
+- **Application Pipeline**: Review, shortlist, and manage candidates through the hiring process
+- **Company Profile**: Professional company branding and information management
+- **Analytics Dashboard**: Comprehensive insights into job performance and candidate quality
+- **Candidate Communication**: Direct messaging and interview scheduling tools
 
-### **For Admins**
+### 👨‍💼 **For Administrators**
 
-- Oversee all jobs and applications
-- Manage user accounts and roles
-- System-wide analytics and monitoring
+- **System Overview**: Complete platform analytics and user management
+- **Content Moderation**: Job and application quality control
+- **User Management**: Role management and account oversight
+- **Platform Analytics**: System-wide performance metrics and insights
 
-### **Platform Features**
+### 🌟 **Platform Features**
 
-- Responsive design for all devices
-- Dark/Light theme toggle
-- Advanced job search and filtering
-- File upload system for resumes
-- Real-time notifications
-- Professional UI/UX design
+- **Responsive Design**: Mobile-first approach with seamless cross-device experience
+- **Dark/Light Themes**: Beautiful theme switching with system preference detection
+- **Real-time Notifications**: Instant updates for applications, messages, and status changes
+- **File Management**: Secure resume uploads and document handling
+- **Advanced Search**: AI-powered job matching and intelligent recommendations
+- **Performance Optimized**: Built with Next.js 15 and optimized for speed
 
-## 🛠️ Tech Stack
+## 🖥️ Dashboard Previews
 
-- **Frontend**: Next.js 15, React 19, TypeScript
-- **Styling**: Tailwind CSS v4, shadcn/ui components
-- **Backend**: Next.js API routes, MongoDB with Mongoose
+### 👨‍💼 Admin Dashboard
+
+![Admin Dashboard](./public/admin-dashboard.png)
+_Complete system overview with analytics, user management, and platform monitoring_
+
+### 🏢 Employer Dashboard
+
+![Employer Dashboard](./public/emp-dashboard.png)
+_Job management, application pipeline, and company analytics_
+
+### 🎯 Talent Dashboard
+
+![Talent Dashboard](./public/talent-dashboard.png)
+_Application tracking, job recommendations, and personal insights_
+
+## 🛠️ Technology Stack
+
+### **Frontend**
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript 5
+- **UI Library**: React 19 with modern hooks
+- **Styling**: Tailwind CSS v4 with custom design system
+- **Components**: shadcn/ui with Radix UI primitives
+- **Animations**: Framer Motion for smooth interactions
+- **Icons**: Lucide React & Tabler Icons
+
+### **Backend**
+
+- **Runtime**: Next.js API Routes
+- **Database**: MongoDB with Mongoose ODM
 - **Authentication**: Better Auth with session management
-- **File Storage**: UploadThing for resume uploads
-- **Database**: MongoDB with proper indexing
-- **Deployment**: Ready for Vercel (frontend) + Render/Heroku (backend)
+- **File Storage**: UploadThing for secure file handling
+- **Email Service**: Resend for transactional emails
+- **Validation**: Built-in TypeScript validation
 
-## 🚀 Getting Started
+### **Infrastructure**
+
+- **Hosting**: Vercel (Frontend) + Render (Backend)
+- **Database**: MongoDB Atlas
+- **CDN**: Vercel Edge Network
+- **Monitoring**: Built-in error tracking and logging
+
+## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+
 - MongoDB database
-- npm or yarn
+- npm or yarn package manager
 
 ### Installation
 
 1. **Clone the repository**
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/yourusername/talent-hub.git
 cd talent-hub
 ```
 
@@ -72,26 +109,26 @@ cd talent-hub
 npm install
 ```
 
-3. **Set up environment variables**
+3. **Environment Setup**
    Create a `.env.local` file:
 
 ```env
 # Database
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/talent-hub
 
 # Authentication
-AUTH_SECRET=your_auth_secret_key
+AUTH_SECRET=your-super-secret-auth-key-here
 AUTH_URL=http://localhost:3000
 
 # File Upload
-UPLOADTHING_SECRET=your_uploadthing_secret
+UPLOADTHING_SECRET=your_uploadthing_secret_key
 UPLOADTHING_APP_ID=your_uploadthing_app_id
 
-# Email (Optional)
+# Email Service (Optional)
 RESEND_API_KEY=your_resend_api_key
 ```
 
-4. **Run the development server**
+4. **Start development server**
 
 ```bash
 npm run dev
@@ -100,180 +137,194 @@ npm run dev
 5. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 📁 Project Structure
+## 📁 Project Architecture
 
 ```
-src/
-├── app/                    # Next.js App Router
-│   ├── (auth)/            # Authentication routes
-│   ├── api/               # API endpoints
-│   ├── dashboard/         # User dashboards
-│   ├── jobs/              # Job-related pages
-│   └── onboarding/        # User onboarding
-├── components/             # React components
-│   ├── ui/                # shadcn/ui components
-│   ├── auth/              # Authentication components
-│   └── ...                # Feature components
-├── models/                 # MongoDB schemas
-├── lib/                    # Utility functions
-└── hooks/                  # Custom React hooks
+talent-hub/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   │   ├── (auth)/            # Authentication routes
+│   │   │   ├── login/         # User login
+│   │   │   ├── signup/        # User registration
+│   │   │   ├── forget-password/ # Password recovery
+│   │   │   └── reset-password/  # Password reset
+│   │   ├── api/               # REST API endpoints
+│   │   │   ├── jobs/          # Job management
+│   │   │   ├── applications/  # Application handling
+│   │   │   ├── employer/      # Employer-specific APIs
+│   │   │   ├── talent/        # Talent-specific APIs
+│   │   │   ├── admin/         # Admin APIs
+│   │   │   ├── notifications/ # Notification system
+│   │   │   └── uploadthing/   # File upload handling
+│   │   ├── dashboard/         # Role-based dashboards
+│   │   │   ├── admin/         # Admin dashboard
+│   │   │   ├── employer/      # Employer dashboard
+│   │   │   └── talent/        # Talent dashboard
+│   │   ├── jobs/              # Job browsing and details
+│   │   └── onboarding/        # User onboarding flow
+│   ├── components/            # React components
+│   │   ├── ui/                # shadcn/ui components
+│   │   ├── auth/              # Authentication components
+│   │   ├── dashboard/         # Dashboard components
+│   │   └── shared/            # Reusable components
+│   ├── hooks/                 # Custom React hooks
+│   ├── lib/                   # Utility libraries
+│   │   ├── auth/              # Authentication logic
+│   │   ├── db.ts              # Database connection
+│   │   └── utils.ts           # Helper functions
+│   ├── models/                # MongoDB schemas
+│   └── utils/                 # Additional utilities
+├── public/                    # Static assets
+├── tailwind.config.js         # Tailwind configuration
+└── next.config.ts            # Next.js configuration
 ```
 
-## 🔌 API Endpoints
+## 🔌 API Overview
 
-### Authentication
+TalentHub provides a comprehensive REST API with the following main endpoints:
 
-- `POST /api/auth/signin` - User sign in
-- `POST /api/auth/signup` - User registration
-- `POST /api/auth/signout` - User sign out
+- **Authentication**: `/api/auth/*` - User registration, login, and session management
+- **Jobs**: `/api/jobs/*` - Job CRUD operations and search
+- **Applications**: `/api/applications/*` - Job application management
+- **Employer**: `/api/employer/*` - Employer-specific operations
+- **Talent**: `/api/talent/*` - Talent-specific operations
+- **Admin**: `/api/admin/*` - Administrative functions
+- **Notifications**: `/api/notifications/*` - Real-time notification system
+- **File Upload**: `/api/uploadthing/*` - Secure file handling
 
-### Jobs
+For detailed API documentation, see [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 
-- `GET /api/jobs` - List all jobs with filtering and pagination
-- `POST /api/jobs` - Create a new job (employer only)
-- `GET /api/jobs/[id]` - Get job details
-- `PATCH /api/jobs/[id]` - Update job (employer only)
-- `DELETE /api/jobs/[id]` - Delete job (employer only)
+## 🗄️ Data Models
 
-### Applications
+### **User Model**
 
-- `GET /api/applications` - List applications with filtering
-- `POST /api/applications` - Apply for a job
-- `GET /api/applications/[id]` - Get application details
-- `PATCH /api/applications/[id]` - Update application status
+- Authentication credentials and profile information
+- Role-based access control (user, employer, admin)
+- Company profile for employers
+- Onboarding status and preferences
 
-### User Management
+### **Job Model**
 
-- `GET /api/user/profile` - Get user profile
-- `PATCH /api/user/profile` - Update user profile
-- `GET /api/user/applications` - Get user's applications
+- Comprehensive job details and requirements
+- Company information and branding
+- Salary ranges and benefits
+- Application tracking and status management
 
-### Employer Dashboard
+### **Application Model**
 
-- `GET /api/employer/dashboard` - Get employer dashboard data
-- `GET /api/employer/company-profile` - Get company profile
-- `PATCH /api/employer/company-profile` - Update company profile
-- `GET /api/employer/jobs` - Get employer's jobs
+- Job application details and status
+- Candidate information and skills
+- Resume and cover letter attachments
+- Interview notes and feedback
 
-### Notifications
+### **Notification Model**
 
-- `GET /api/notifications` - Get user notifications
-- `PATCH /api/notifications/[id]` - Mark notification as read
+- Real-time system notifications
+- User-specific alerts and updates
+- Read status and delivery tracking
 
-### Data Management
+## 🎨 Design System
 
-- `POST /api/seed` - Seed database with sample data (development)
+TalentHub features a modern, accessible design system built with:
 
-## 🗄️ Database Models
+- **Color Palette**: Semantic color tokens for dark/light themes
+- **Typography**: Consistent font hierarchy and spacing
+- **Components**: Reusable UI components with variants
+- **Animations**: Smooth transitions and micro-interactions
+- **Responsiveness**: Mobile-first responsive design
 
-### User
+## 🔐 Security Features
 
-- Basic info: email, name, password, image
-- Role: user, employer, admin
-- Company profile (for employers)
-- Onboarding status
-
-### Job
-
-- Title, description, requirements
-- Location, type, salary range
-- Company information
-- Status: active, paused, closed
-- Tags and experience level
-
-### Application
-
-- Job and user references
-- Status: applied, shortlisted, interviewed, rejected, hired
-- Cover letter, resume, experience
-- Skills and expected salary
-
-### Notification
-
-- User reference
-- Type and message
-- Read status and timestamps
-
-## 🎨 UI Components
-
-### Core Components
-
-- **Navbar**: Navigation with user menu and theme toggle
-- **HeroSection**: Landing page with job search
-- **JobOffersSection**: Dynamic job listings
-- **ApplicationModal**: Job application form
-- **Dashboard**: Role-based user dashboards
-- **ThemeSwitcher**: Dark/light mode toggle
-
-### Features
-
-- Responsive grid layouts
-- Loading states and skeletons
-- Error handling and empty states
-- Form validation and feedback
-- Real-time updates
-
-## 🔐 Authentication & Authorization
-
-- **Session-based authentication** using Better Auth
-- **Role-based access control** (user, employer, admin)
-- **Protected routes** for sensitive operations
-- **JWT tokens** for secure communication
-- **Password hashing** and validation
+- **Authentication**: Secure session-based authentication
+- **Authorization**: Role-based access control (RBAC)
+- **Data Validation**: Input sanitization and validation
+- **File Security**: Secure file uploads with type validation
+- **API Protection**: Rate limiting and request validation
+- **HTTPS**: Secure communication protocols
 
 ## 📱 Responsive Design
 
-- **Mobile-first approach** with Tailwind CSS
-- **Breakpoint system** for all screen sizes
-- **Touch-friendly interfaces** for mobile devices
-- **Optimized layouts** for tablets and desktops
+- **Mobile-First**: Optimized for mobile devices
+- **Breakpoint System**: Responsive layouts for all screen sizes
+- **Touch-Friendly**: Optimized touch interactions
+- **Performance**: Fast loading and smooth animations
 
 ## 🚀 Deployment
 
-### Frontend (Vercel)
+### **Frontend (Vercel)**
 
 ```bash
 npm run build
-# Deploy to Vercel
+# Deploy to Vercel with automatic CI/CD
 ```
 
-### Backend (Render/Heroku)
+### **Backend (Render/Heroku)**
 
 - Set environment variables
 - Connect MongoDB database
 - Deploy API routes
 
-## 🧪 Testing
+### **Environment Variables**
 
-1. **Start the application**: `npm run dev`
-2. **Seed the database**: Visit `/api/seed`
-3. **Test user flows**:
-   - User registration and login
-   - Job posting (employer)
-   - Job application (talent)
-   - Dashboard functionality
-   - File uploads
+Ensure all required environment variables are set in your deployment platform.
+
+## 🧪 Testing & Development
+
+### **Development Workflow**
+
+1. Start development server: `npm run dev`
+2. Seed database: Visit `/api/seed` (development only)
+3. Test user flows and API endpoints
+4. Use browser dev tools for debugging
+
+### **Testing Scenarios**
+
+- User registration and authentication
+- Job posting and management
+- Application submission and tracking
+- Dashboard functionality
+- File uploads and management
+- Notification system
 
 ## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+We welcome contributions! Please follow these steps:
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
+
+### **Development Guidelines**
+
+- Follow TypeScript best practices
+- Use conventional commit messages
+- Ensure responsive design compatibility
+- Test across different devices and browsers
+- Maintain accessibility standards
 
 ## 📄 License
 
-This project is open source and available under the [MIT License](LICENSE).
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🆘 Support
+## 🆘 Support & Community
 
-For questions or issues:
+- **Documentation**: [API Documentation](./API_DOCUMENTATION.md)
+- **Issues**: [GitHub Issues](https://github.com/yourusername/talent-hub/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/talent-hub/discussions)
+- **Email**: support@talenthub.com
 
-- Check the [API Documentation](./API_DOCUMENTATION.md)
-- Review the [Setup Instructions](./SETUP_INSTRUCTIONS.md)
-- Open an issue on GitHub
+## 🙏 Acknowledgments
+
+- **Next.js Team** for the amazing framework
+- **Vercel** for hosting and deployment
+- **shadcn/ui** for beautiful components
+- **Better Auth** for authentication
+- **MongoDB** for the database solution
 
 ---
 
 **TalentHub** - Connecting Talent with Opportunity 🚀
+
+_Built with ❤️ using Next.js, TypeScript, and MongoDB_
