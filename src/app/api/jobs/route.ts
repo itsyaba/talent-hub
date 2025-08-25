@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
 import { Job, User } from "@/models";
+import { NotificationService } from "@/lib/notification-service";
 
 // Ensure models are registered
 import "@/models";
@@ -112,6 +113,14 @@ export async function POST(request: NextRequest) {
     });
 
     await job.save();
+
+    // Send notification to employer about job posted
+    try {
+      await NotificationService.notifyJobPosted(job._id.toString(), session.user.id, job.title);
+    } catch (notificationError) {
+      console.error("Error sending job posted notification:", notificationError);
+      // Don't fail the job creation if notification fails
+    }
 
     // Return the job without populating to avoid the error
     // The frontend can fetch user details separately if needed

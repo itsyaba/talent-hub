@@ -225,7 +225,7 @@ const JobDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-muted/30 py-16">
+      <div className="min-h-screen bg-muted/30 py-16 mt-20">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="animate-pulse">
             <div className="h-8 bg-muted rounded w-1/4 mb-8"></div>

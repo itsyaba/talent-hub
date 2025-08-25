@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
 import { User } from "@/models";
+import { NotificationService } from "@/lib/notification-service";
 
 // Ensure models are registered
 import "@/models";
@@ -53,6 +54,14 @@ export async function PATCH(request: NextRequest) {
 
     if (!updatedUser) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
+    }
+
+    // Send notification about profile update
+    try {
+      await NotificationService.notifyProfileUpdated(session.user.id, "company_profile");
+    } catch (notificationError) {
+      console.error("Error sending profile update notification:", notificationError);
+      // Don't fail the profile update if notification fails
     }
 
     return NextResponse.json({

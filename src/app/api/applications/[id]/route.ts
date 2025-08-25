@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
 import { Application, Job } from "@/models";
+import { NotificationService } from "@/lib/notification-service";
 
 // PATCH /api/applications/[id] - Update application status
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -47,6 +48,9 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       );
     }
 
+    // Store old status for notification
+    const oldStatus = application.status;
+
     // Update the application
     const updateData: any = {};
     if (status) updateData.status = status;
@@ -59,6 +63,23 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       { path: "jobId", select: "title company location type" },
       { path: "userId", select: "name email image" },
     ]);
+
+    // Send notification to candidate about status change
+    if (status && status !== oldStatus) {
+      try {
+        await NotificationService.notifyApplicationStatusChanged(
+          application._id.toString(),
+          application.userId.toString(),
+          job.title,
+          oldStatus,
+          status,
+          job.company.name
+        );
+      } catch (notificationError) {
+        console.error("Error sending status change notification:", notificationError);
+        // Don't fail the status update if notification fails
+      }
+    }
 
     return NextResponse.json({
       success: true,

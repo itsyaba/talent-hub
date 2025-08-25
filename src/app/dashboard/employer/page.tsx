@@ -56,6 +56,18 @@ export default function EmployerDashboard() {
       }
       return;
     }
+
+    // Send welcome notification if this is the first time accessing dashboard
+    if (session.user.id) {
+      fetch("/api/notifications/welcome", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).catch((error) => {
+        console.error("Error sending welcome notification:", error);
+      });
+    }
   }, [session, loading, router]);
 
   const handleApplicationStatusUpdate = async (applicationId: string, newStatus: string) => {

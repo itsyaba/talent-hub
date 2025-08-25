@@ -421,7 +421,7 @@ const ApplicationModal = ({
                 </CardHeader>
                 <CardContent>
                   <Label htmlFor="resume">Upload your resume (PDF, DOC, DOCX) *</Label>
-                  <div className="mt-2">
+                  <div className="mt-2 bg-gray-600  dark:bg-gray-300 rounded-md p-2 h-40 flex items-center justify-center flex-col">
                     {!formData.resume ? (
                       <UploadButton
                         endpoint="resumeUploader"

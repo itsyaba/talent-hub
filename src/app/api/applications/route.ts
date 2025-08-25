@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth/auth";
 import dbConnect from "@/lib/db";
 import { Application, Job, User } from "@/models";
+import { NotificationService } from "@/lib/notification-service";
 
 // GET /api/applications - Get applications with optional filtering
 export async function GET(request: NextRequest) {
@@ -235,6 +236,20 @@ export async function POST(request: NextRequest) {
     await Job.findByIdAndUpdate(jobId, {
       $push: { applications: application._id },
     });
+
+    // Send notification to employer about new application
+    try {
+      await NotificationService.notifyJobApplicationReceived(
+        jobId,
+        job.createdBy.toString(),
+        application._id.toString(),
+        fullName,
+        job.title
+      );
+    } catch (notificationError) {
+      console.error("Error sending application notification:", notificationError);
+      // Don't fail the application creation if notification fails
+    }
 
     // Populate related data
     await application.populate("jobId", "title company location type");
